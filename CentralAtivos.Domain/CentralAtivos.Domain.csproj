@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{794EA289-D539-4025-BC71-C1B17DA1DDD9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CentralAtivos.Domain</RootNamespace>
+    <AssemblyName>CentralAtivos.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\Base.cs" />
+    <Compile Include="Entities\CampoExtra.cs" />
+    <Compile Include="Entities\Coletor.cs" />
+    <Compile Include="Entities\ContaContabil.cs" />
+    <Compile Include="Entities\CentroCusto.cs" />
+    <Compile Include="Entities\Empresa.cs" />
+    <Compile Include="Entities\EntidadeCampo.cs" />
+    <Compile Include="Entities\Enums.cs" />
+    <Compile Include="Entities\EspeciePropriedade.cs" />
+    <Compile Include="Entities\Funcionalidade.cs" />
+    <Compile Include="Entities\InventarioItem.cs" />
+    <Compile Include="Entities\PlacaGrupo.cs" />
+    <Compile Include="Entities\Imagem.cs" />
+    <Compile Include="Entities\Inventario.cs" />
+    <Compile Include="Entities\InventarioConfig.cs" />
+    <Compile Include="Entities\InventarioFilial.cs" />
+    <Compile Include="Entities\InventarioLocal.cs" />
+    <Compile Include="Entities\InventarioUsuario.cs" />
+    <Compile Include="Entities\ItemEstado.cs" />
+    <Compile Include="Entities\Filial.cs" />
+    <Compile Include="Entities\Especie.cs" />
+    <Compile Include="Entities\Grupo.cs" />
+    <Compile Include="Entities\Item.cs" />
+    <Compile Include="Entities\ItemPropriedadeValor.cs" />
+    <Compile Include="Entities\Local.cs" />
+    <Compile Include="Entities\LogUsuario.cs" />
+    <Compile Include="Entities\OrdemServicoAnexo.cs" />
+    <Compile Include="Entities\OrdemServicoItem.cs" />
+    <Compile Include="Entities\OrdemServicoMotivo.cs" />
+    <Compile Include="Entities\OrdemServico.cs" />
+    <Compile Include="Entities\OrdemServicoCampo.cs" />
+    <Compile Include="Entities\OrdemServicoMotivoCampo.cs" />
+    <Compile Include="Entities\OrdemServicoMotivoCampoValor.cs" />
+    <Compile Include="Entities\Menu.cs" />
+    <Compile Include="Entities\PerfilMenu.cs" />
+    <Compile Include="Entities\Perfil.cs" />
+    <Compile Include="Entities\Permissao.cs" />
+    <Compile Include="Entities\Placa.cs" />
+    <Compile Include="Entities\Propriedade.cs" />
+    <Compile Include="Entities\PropriedadeValor.cs" />
+    <Compile Include="Entities\Requisicao.cs" />
+    <Compile Include="Entities\Responsavel.cs" />
+    <Compile Include="Entities\Sincronizacao.cs" />
+    <Compile Include="Entities\Status.cs" />
+    <Compile Include="Entities\Upload.cs" />
+    <Compile Include="Entities\Usuario.cs" />
+    <Compile Include="Interfaces\IContaContabil.cs" />
+    <Compile Include="Interfaces\ICentroCusto.cs" />
+    <Compile Include="Interfaces\IEntidadeCampo.cs" />
+    <Compile Include="Interfaces\IEspeciePropriedade.cs" />
+    <Compile Include="Interfaces\IInventarioConfig.cs" />
+    <Compile Include="Interfaces\IInventarioFilial.cs" />
+    <Compile Include="Interfaces\IInventarioUsuario.cs" />
+    <Compile Include="Interfaces\IInventarioLocal.cs" />
+    <Compile Include="Interfaces\IInventario.cs" />
+    <Compile Include="Interfaces\IItemEstado.cs" />
+    <Compile Include="Interfaces\IOrdemServicoItem.cs" />
+    <Compile Include="Interfaces\IOrdemServicoAnexo.cs" />
+    <Compile Include="Interfaces\IOrdemServicoMotivoCampos.cs" />
+    <Compile Include="Interfaces\IOrdemServicoMotivoCampoValor.cs" />
+    <Compile Include="Interfaces\IOrdemServicoCampo.cs" />
+    <Compile Include="Interfaces\IOrdemServicoMotivo.cs" />
+    <Compile Include="Interfaces\IOrdemServico.cs" />
+    <Compile Include="Interfaces\IMenu .cs" />
+    <Compile Include="Interfaces\IFuncionalidade.cs" />
+    <Compile Include="Interfaces\IColetor.cs" />
+    <Compile Include="Interfaces\IPlacaGrupo.cs" />
+    <Compile Include="Interfaces\IPlaca.cs" />
+    <Compile Include="Interfaces\IPerfilMenu.cs" />
+    <Compile Include="Interfaces\ISincronizacao.cs" />
+    <Compile Include="Interfaces\IPropriedadeValor.cs" />
+    <Compile Include="Interfaces\IPropriedade.cs" />
+    <Compile Include="Interfaces\IEspecie.cs" />
+    <Compile Include="Interfaces\IGrupo.cs" />
+    <Compile Include="Interfaces\IRequisicao.cs" />
+    <Compile Include="Interfaces\ILocal.cs" />
+    <Compile Include="Interfaces\IFilial.cs" />
+    <Compile Include="Interfaces\IPerfil.cs" />
+    <Compile Include="Interfaces\ILogUsuario.cs" />
+    <Compile Include="Interfaces\IPermissao.cs" />
+    <Compile Include="Interfaces\IEmpresa.cs" />
+    <Compile Include="Interfaces\IItem.cs" />
+    <Compile Include="Interfaces\IResponsavel.cs" />
+    <Compile Include="Interfaces\IUpload.cs" />
+    <Compile Include="Interfaces\IUsuario.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

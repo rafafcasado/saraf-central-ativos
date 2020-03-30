@@ -1,0 +1,811 @@
+﻿<div class="kt-portlet" id="ordem-servico-form">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Ordem de Serviço
+            </h3>
+        </div>
+    </div>
+    <div class="kt-portlet__body">
+        <ul class="nav nav-tabs  nav-tabs-line nav-tabs-line-primary" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" href="#kt_tabs_7_1" role="tab" aria-selected="true">1. Motivo</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#kt_tabs_7_2" role="tab" aria-selected="false">2. Origem</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#kt_tabs_7_3" role="tab" aria-selected="false">3. Itens</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#kt_tabs_7_4" role="tab" aria-selected="false">4. Outras Informações</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#kt_tabs_7_5" role="tab" aria-selected="false">5. Anexos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#kt_tabs_7_6" role="tab" aria-selected="false">6. Imagens</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#kt_tabs_7_7" role="tab" aria-selected="false">7. Resumo e Finalização</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="kt_tabs_7_1" role="tabpanel">
+                <fieldset>
+                    <label>Selecione um motivo abaixo para prosseguir:</label>
+                    <div class="form-check" v-for="(motivo, index) in motivos">
+                        <input class="form-check-input" type="radio" v-bind:id="'motivo_'+index" name="rbMotivos" v-bind:value="motivo.ID" v-model="ordemServico.OrdemServicoMotivoID" v-on:click="selecionarMotivo(index)">
+                        <label class="form-check-label" v-bind:for="'motivo_'+index">{{motivo.Nome}}</label>
+                    </div>
+                </fieldset>
+                <hr />
+                <p>
+                    <button type="button" class="btn btn-primary" v-bind:disabled="ordemServico.OrdemServicoMotivoID <= 0" v-on:click="navegar('kt_tabs_7_2')">Próximo Passo</button>
+                </p>
+            </div>
+            <div class="tab-pane" id="kt_tabs_7_2" role="tabpanel">
+                <h6>Selecione a Filial e o Local de Origem:</h6>
+                <br />
+                <div class="form-group row">
+                    <div class="col-6" v-if="motivoSelecionado.CamposVinculados.indexOf('FilialOrigemID') >= 0">
+                        <label>Filial</label>
+                        <select class="form-control" v-model="ordemServico.Campos.FilialOrigemID" v-on:change="listarLocaisOrigem">
+                            <option value="">- Selecione uma Filial -</option>
+                            <option v-bind:value="filial.ID" v-for="filial in filiaisOrigem">{{filial.Nome}}</option>
+                        </select>
+                    </div>
+                    <div class="col-6" v-if="motivoSelecionado.CamposVinculados.indexOf('LocalOrigemID') >= 0">
+                        <label>Local</label>
+                        <select class="form-control" v-model="ordemServico.Campos.LocalOrigemID" v-bind:disabled="ordemServico.Campos.FilialOrigemID <= 0" v-on:change="listarItensLocalOrigem">
+                            <option value="">- Selecione um Local -</option>
+                            <option v-bind:value="local.ID" v-for="local in locaisOrigem">{{local.CaminhoPao}}</option>
+                        </select>
+                    </div>
+                </div>
+                <hr />
+                <p>
+                    <button type="button" class="btn btn-primary" v-on:click="navegar('kt_tabs_7_1')">Voltar</button>
+                    <button type="button" class="btn btn-primary" v-bind:disabled="ordemServico.Campos.LocalOrigemID <= 0" v-on:click="navegar('kt_tabs_7_3')">Próximo Passo</button>
+                </p>
+            </div>
+            <div class="tab-pane" id="kt_tabs_7_3" role="tabpanel">
+                <h6>Selecione os Itens que deseja adicionar à Ordem de Serviço</h6>
+                <br />
+                <div class="form-group row">
+                    <div class="col-6">
+                        <label>Item</label>
+                        <select class="form-control" v-model="itemSelecionado" v-bind:disabled="ordemServico.Campos.LocalOrigemID <= 0">
+                            <option value="">- Selecione um Item -</option>
+                            <option v-bind:value="item.ID" v-for="item in itens">{{item.Codigo}} {{item.Nome}}</option>
+                        </select>
+                    </div>
+                    <div class="col-6" style="padding-top: 25px;">
+                        <button class="btn btn-primary text-center" v-on:click="incluirItem">&nbsp;<i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <hr />
+                <br />
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="3">Itens Selecionados</th>
+                        </tr>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nome</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) in ordemServico.Itens">
+                            <td align="center">{{item.Codigo}}</td>
+                            <td>{{item.Nome}}</td>
+                            <td align="center">
+                                <button type="button" class="btn btn-sm btn-danger" v-on:click="removerItem(index)">&nbsp;<i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr />
+                <p>
+                    <button type="button" class="btn btn-primary" v-on:click="navegar('kt_tabs_7_2')">Voltar</button>
+                    <button type="button" class="btn btn-primary" v-bind:disabled="ordemServico.Itens.length < 1" v-on:click="navegar('kt_tabs_7_4')">Próximo Passo</button>
+                </p>
+            </div>
+            <form class="tab-pane" id="kt_tabs_7_4" role="tabpanel" v-on:submit.prevent="validarOutrasInformacoes">
+                <h6>Preencha as seguintes informações complementares:</h6>
+                <br />
+                <div class="form-group row" v-if="motivoSelecionado.CamposVinculados.indexOf('FilialDestinoID') >= 0 && motivoSelecionado.CamposVinculados.indexOf('LocalDestinoID') >= 0">
+                    <div class="col-6">
+                        <label>Filial de Destino</label>
+                        <select class="form-control" v-model="ordemServico.Campos.FilialDestinoID" v-on:change="listarLocaisDestino" v-bind:required="motivoSelecionado.CamposVinculados.indexOf('FilialDestinoID') >= 0">
+                            <option value="">- Selecione uma Filial -</option>
+                            <option v-bind:value="filial.ID" v-for="filial in filiaisDestino">{{filial.Nome}}</option>
+                        </select>
+                    </div>
+                    <div class="col-6" v-if="">
+                        <label>Local de Destino</label>
+                        <select class="form-control" v-model="ordemServico.Campos.LocalDestinoID" v-bind:disabled="ordemServico.Campos.FilialDestinoID <= 0" v-bind:required="motivoSelecionado.CamposVinculados.indexOf('LocalDestinoID') >= 0">
+                            <option value="">- Selecione um Local -</option>
+                            <option v-bind:value="local.ID" v-for="local in locaisDestino">{{local.CaminhoPao}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row" v-if="motivoSelecionado.CamposVinculados.indexOf('Justificativa') >= 0">
+                    <div class="col-12">
+                        <label>Justificativa</label>
+                        <textarea class="form-control" maxlength="350" rows="3" v-model="ordemServico.Campos.Justificativa" v-bind:required="motivoSelecionado.CamposVinculados.indexOf('Justificativa') >= 0"></textarea>
+                    </div>
+                </div>
+                <div class="form-group row" v-if="motivoSelecionado.CamposVinculados.indexOf('ResponsavelDestinoID') >= 0">
+                    <div class="col-6">
+                        <label>Responsável no Destino</label>
+                        <select class="form-control" v-model="ordemServico.Campos.ResponsavelDestinoID" v-bind:required="motivoSelecionado.CamposVinculados.indexOf('ResponsavelDestinoID') >= 0">
+                            <option value="">- Selecione um Responsável -</option>
+                            <option v-bind:value="resp.ID" v-for="resp in responsaveis">{{resp.Nome}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row" v-if="motivoSelecionado.CamposVinculados.indexOf('LocalExterno') >= 0">
+                    <div class="col-12">
+                        <label>Local Externo</label>
+                        <input type="text" class="form-control" v-model="ordemServico.Campos.LocalExterno" v-bind:required="motivoSelecionado.CamposVinculados.indexOf('LocalExterno') >= 0" />
+                    </div>
+                </div>
+                <div class="form-group row" v-if="motivoSelecionado.CamposVinculados.indexOf('TipoSinistro') >= 0">
+                    <div class="col-12">
+                        <label>Tipo de Sinistro</label>
+                        <input type="text" class="form-control" v-model="ordemServico.Campos.TipoSinistro" v-bind:required="motivoSelecionado.CamposVinculados.indexOf('TipoSinistro') >= 0" />
+                    </div>
+                </div>
+                <div class="form-group row" v-if="motivoSelecionado.CamposVinculados.indexOf('GrupoID') >= 0 && motivoSelecionado.CamposVinculados.indexOf('EspecieID') >= 0">
+                    <div class="col-6">
+                        <label>Grupo</label>
+                        <select class="form-control" v-model="ordemServico.Campos.GrupoID" v-on:change="listarEspecies" v-bind:required="motivoSelecionado.CamposVinculados.indexOf('GrupoID') >= 0">
+                            <option value="">- Selecione um Grupo -</option>
+                            <option v-bind:value="grupo.ID" v-for="grupo in grupos">{{grupo.Codigo}} {{grupo.Nome}}</option>
+                        </select>
+                    </div>
+                    <div class="col-6" v-if="">
+                        <label>Espécie</label>
+                        <select class="form-control" v-model="ordemServico.Campos.EspecieID" v-bind:disabled="ordemServico.Campos.GrupoID <= 0" v-bind:required="motivoSelecionado.CamposVinculados.indexOf('EspecieID') >= 0">
+                            <option value="">- Selecione uma Espécie -</option>
+                            <option v-bind:value="especie.ID" v-for="especie in especies">{{especie.Codigo}} {{especie.Nome}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row" v-if="motivoSelecionado.CamposVinculados.indexOf('Quantidade') >= 0">
+                    <div class="col-12">
+                        <label>Quantidade</label>
+                        <input type="number" class="form-control" v-model="ordemServico.Campos.Quantidade" v-bind:required="motivoSelecionado.CamposVinculados.indexOf('Quantidade') >= 0" />
+                    </div>
+                </div>
+                <hr />
+                <p>
+                    <button type="button" class="btn btn-primary" v-on:click="navegar('kt_tabs_7_3')">Voltar</button>
+                    <button type="submit" class="btn btn-primary">Próximo Passo</button>
+                </p>
+            </form>
+            <form class="tab-pane" id="kt_tabs_7_5" role="tabpanel" v-on:submit.prevent="validarAnexos">
+                <button type="button" class="btn btn-secondary" v-on:click="adicionarAnexo">Adicionar Anexo</button>
+                <hr v-if="anexos.length > 0" />
+                <div class="form-group row" v-for="(anexo, index) in anexos">
+                    <div class="col-11">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" ref="arquivos" v-bind:id="'anexo_'+index" required v-on:change="arquivoSelecionado(index)">
+                            <label class="custom-file-label" v-bind:for="'anexo_'+index" data-browse="Buscar Arquivo">{{anexo.Nome}}</label>
+                        </div>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <button type="button" class="btn btn-sm btn-danger" v-on:click="anexos.splice(index, 1)">&nbsp;<i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+
+                <hr />
+                <p>
+                    <button type="button" class="btn btn-primary" v-on:click="navegar('kt_tabs_7_4')">Voltar</button>
+                    <button type="submit" class="btn btn-primary">Próximo Passo</button>
+                </p>
+            </form>
+            <form class="tab-pane" id="kt_tabs_7_6" role="tabpanel" v-on:submit.prevent="validarImagens">
+                <button type="button" class="btn btn-secondary" v-on:click="adicionarImagem">Adicionar Imagem</button>
+                <hr v-if="imagens.length > 0" />
+                <div class="form-group row" v-for="(imagem, index) in imagens">
+                    <div class="col-11">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" ref="imagens" v-bind:id="'imagem_'+index" required v-on:change="imagemSelecionada(index)">
+                            <label class="custom-file-label" v-bind:for="'imagem_'+index" data-browse="Buscar Imagem">{{imagem.Nome}}</label>
+                        </div>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <button type="button" class="btn btn-sm btn-danger" v-on:click="imagens.splice(index, 1)">&nbsp;<i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <hr />
+                <p>
+                    <button type="button" class="btn btn-primary" v-on:click="navegar('kt_tabs_7_5')">Voltar</button>
+                    <button type="submit" class="btn btn-primary">Próximo Passo</button>
+                </p>
+            </form>
+            <div class="tab-pane" id="kt_tabs_7_7" role="tabpanel">
+                <div class="kt-notes">
+                    <div class="kt-notes__items">
+                        <div class="kt-notes__item">
+                            <div class="kt-notes__media">
+                                <span class="kt-notes__icon">
+                                    1
+                                </span>
+                            </div>
+                            <div class="kt-notes__content">
+                                <div class="kt-notes__section">
+                                    <div class="kt-notes__info">
+                                        <a class="kt-notes__title">
+                                            Motivo
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="kt-notes__body">
+                                    {{ordemServico.OrdemServicoMotivoNome}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kt-notes__item">
+                            <div class="kt-notes__media">
+                                <span class="kt-notes__icon">
+                                    2
+                                </span>
+                            </div>
+                            <div class="kt-notes__content">
+                                <div class="kt-notes__section">
+                                    <div class="kt-notes__info">
+                                        <a class="kt-notes__title">
+                                            Origem
+                                        </a>
+                                    </div>
+                                </div>
+                                <span class="kt-notes__body">
+                                    {{ordemServico.Campos.FilialOrigemNome}} > {{ordemServico.Campos.LocalOrigemNome}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="kt-notes__item">
+                            <div class="kt-notes__media">
+                                <span class="kt-notes__icon">
+                                    3
+                                </span>
+                            </div>
+                            <div class="kt-notes__content">
+                                <div class="kt-notes__section">
+                                    <div class="kt-notes__info">
+                                        <a class="kt-notes__title">
+                                            Itens
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="kt-notes__body">
+                                    <button disabled class="btn btn-outline-secondary mr-1" v-for="item in ordemServico.Itens"><i class="fas fa-thumbtack"></i>&nbsp;{{item.Codigo}} {{item.Nome}}</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kt-notes__item">
+                            <div class="kt-notes__media">
+                                <span class="kt-notes__icon">
+                                    4
+                                </span>
+                            </div>
+                            <div class="kt-notes__content">
+                                <div class="kt-notes__section">
+                                    <div class="kt-notes__info">
+                                        <a class="kt-notes__title">
+                                            Outras Informações
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="kt-notes__body">
+                                    <div class="form-group row">
+                                        <div class="col-12" v-if="motivoSelecionado.CamposVinculados.indexOf('Justificativa') >= 0">
+                                            <label>Justificativa</label>
+                                            <textarea class="form-control" disabled rows="3">{{ordemServico.Campos.Justificativa}}</textarea>
+                                        </div>
+                                        <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('FilialDestinoID') >= 0">
+                                            <label>Filial Destino</label>
+                                            <input type="text" disabled class="form-control" v-bind:value="ordemServico.Campos.FilialDestinoNome" />
+                                        </div>
+                                        <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('LocalDestinoID') >= 0">
+                                            <label>Local Destino</label>
+                                            <input type="text" disabled class="form-control" v-bind:value="ordemServico.Campos.LocalDestinoNome" />
+                                        </div>
+                                        <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('ResponsavelDestinoID') >= 0">
+                                            <label>Responsável no Destino</label>
+                                            <input type="text" disabled class="form-control" v-bind:value="ordemServico.Campos.ResponsavelDestinoNome" />
+                                        </div>
+                                        <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('LocalExterno') >= 0">
+                                            <label>Local Externo</label>
+                                            <input type="text" disabled class="form-control" v-bind:value="ordemServico.Campos.LocalExterno" />
+                                        </div>
+                                        <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('TipoSinistro') >= 0">
+                                            <label>Tipo de Sinistro</label>
+                                            <input type="text" disabled class="form-control" v-bind:value="ordemServico.Campos.TipoSinistro" />
+                                        </div>
+                                        <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('GrupoID') >= 0">
+                                            <label>Grupo</label>
+                                            <input type="text" disabled class="form-control" v-bind:value="ordemServico.Campos.GrupoNome" />
+                                        </div>
+                                        <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('EspecieID') >= 0">
+                                            <label>Espécie</label>
+                                            <input type="text" disabled class="form-control" v-bind:value="ordemServico.Campos.EspecieNome" />
+                                        </div>
+                                        <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('Quantidade') >= 0">
+                                            <label>Quantidade</label>
+                                            <input type="text" disabled class="form-control" v-bind:value="ordemServico.Campos.Quantidade" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kt-notes__item">
+                            <div class="kt-notes__media">
+                                <span class="kt-notes__icon">
+                                    5
+                                </span>
+                            </div>
+                            <div class="kt-notes__content">
+                                <div class="kt-notes__section">
+                                    <div class="kt-notes__info">
+                                        <a class="kt-notes__title">
+                                            Anexos
+                                        </a>
+                                    </div>
+                                </div>
+                                <span class="kt-notes__body">
+                                    <button disabled class="btn btn-outline-secondary mr-1" v-for="anexo in anexos"><i class="fas fa-file-archive"></i>&nbsp;{{anexo.Nome}}</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="kt-notes__item">
+                            <div class="kt-notes__media">
+                                <span class="kt-notes__icon">
+                                    6
+                                </span>
+                            </div>
+                            <div class="kt-notes__content">
+                                <div class="kt-notes__section">
+                                    <div class="kt-notes__info">
+                                        <a class="kt-notes__title">
+                                            Imagens
+                                        </a>
+                                    </div>
+                                </div>
+                                <span class="kt-notes__body">
+                                    <button disabled class="btn btn-outline-secondary mr-1" v-for="img in imagens"><i class="fas fa-image"></i>&nbsp;{{img.Nome}}</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <p>
+                    <button type="button" class="btn btn-primary" v-on:click="navegar('kt_tabs_7_6')">Voltar</button>
+                    <button type="button" class="btn btn-success" v-on:click="salvar"><i class="fas fa-check"></i>&nbsp;Finalizar</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#ordem-servico-form',
+            data() {
+                return {
+                    ordemServico: {
+                        ID: 0,
+                        EmpresaID: localStorage.getItem('empresaID'),
+                        OrdemServicoMotivoID: 0,
+                        OrdemServicoMotivoNome: '',
+                        Campos: {
+                            FilialOrigemID: '',
+                            FilialOrigemNome: '',
+                            LocalOrigemID: '',
+                            LocalOrigemNome: '',
+                            FilialDestinoID: '',
+                            FilialDestinoNome: '',
+                            LocalDestinoID: '',
+                            LocalDestinoNome: '',
+                            Justificativa: '',
+                            ResponsavelOrigemID: '',
+                            ResponsavelOrigemNome: '',
+                            ResponsavelDestinoID: '',
+                            ResponsavelDestinoNome: '',
+                            LocalExterno: '',
+                            TipoSinistro: '',
+                            GrupoID: '',
+                            GrupoNome: '',
+                            EspecieID: '',
+                            EspecieNome: '',
+                            Quantidade: ''
+                        },
+                        Itens: []
+                    },
+                    motivos: [],
+                    filiaisOrigem: [],
+                    filiaisDestino: [],
+                    locaisOrigem: [],
+                    locaisDestino: [],
+                    itens: [],
+                    responsaveis: [],
+                    grupos: [],
+                    especies: [],
+                    anexos: [],
+                    imagens: [],
+                    errors: [],
+                    itemSelecionado: '',
+                    motivoSelecionado: {
+                        CamposVinculados: ''
+                    }
+                };
+            },
+
+            methods: {
+
+                selecionarMotivo(index) {
+
+                    this.motivoSelecionado = this.motivos[index];
+                },
+
+                listarMotivos() {
+
+                    api.get('ordemservicomotivo/getmotivos', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.motivos = data;
+                            this.motivoSelecionado = data[0];
+                        });
+                },
+
+                listarFiliais() {
+
+                    api.get('filial/getbyempresaid/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.filiaisOrigem = data;
+                            this.filiaisDestino = data;
+                        });
+                },
+
+                listarLocaisOrigem() {
+
+                    if (this.ordemServico.Campos.FilialOrigemID == '')
+                        this.ordemServico.Campos.LocalOrigemID = ''
+                    else {
+
+                        api.get('local/getallbyfilialid/' + this.ordemServico.Campos.FilialOrigemID, true)
+                            .then(({ data, errors }) => {
+                                this.errors = errors || {};
+                                if (errors) {
+                                    return;
+                                }
+                                this.locaisOrigem = data;
+                            });
+                    }
+                },
+
+                listarLocaisDestino() {
+
+                    if (this.ordemServico.Campos.FilialDestinoID == '')
+                        this.ordemServico.Campos.LocalDestinoID = ''
+                    else {
+
+                        api.get('local/getallbyfilialid/' + this.ordemServico.Campos.FilialDestinoID, true)
+                            .then(({ data, errors }) => {
+                                this.errors = errors || {};
+                                if (errors) {
+                                    return;
+                                }
+                                this.locaisDestino = data;
+                            });
+                    }
+                },
+
+                listarItensLocalOrigem() {
+
+                    if (this.ordemServico.Campos.LocalOrigemID == '')
+                        this.itemSelecionado = '';
+                    else {
+
+                        api.get('item/getbylocalid/' + this.ordemServico.Campos.LocalOrigemID, true)
+                            .then(({ data, errors }) => {
+                                this.errors = errors || {};
+                                if (errors) {
+                                    return;
+                                }
+                                this.itens = data;
+                            });
+                    }
+                },
+
+                listarResponsaveis() {
+
+                    api.get('responsavel/getbyempresaid/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.responsaveis = data.filter(resp => { return resp.UsuarioID != null });
+                        });
+                },
+
+                listarGrupos() {
+
+                    api.get('grupo/getbyempresaid/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.grupos = data;
+                        });
+                },
+
+                listarEspecies() {
+
+                    api.get('especie/getbygrupoid/' + this.ordemServico.Campos.GrupoID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.especies = data;
+                        });
+                },
+
+                incluirItem() {
+
+                    var self = this;
+
+                    var item = self.itens.filter(item => { return item.ID == self.itemSelecionado })[0];
+
+                    this.ordemServico.Itens.push(item);
+
+                    self.itens.splice(self.itens.indexOf(item), 1);
+
+                    self.itemSelecionado = '';
+                },
+
+                removerItem(index) {
+
+                    var self = this;
+
+                    var item = self.ordemServico.Itens[index];
+
+                    this.itens.push(item);
+
+                    self.ordemServico.Itens.splice(index, 1);
+                },
+
+                navegar(nav) {
+
+                    $('.nav-tabs a[href="#' + nav + '"]').tab('show');
+                },
+
+                validarOutrasInformacoes() {
+
+                    $('.nav-tabs a[href="#kt_tabs_7_5"]').tab('show');
+                },
+
+                adicionarAnexo() {
+
+                    this.anexos.push({ Nome: 'Anexo', Miniatura: '' });
+                },
+
+                arquivoSelecionado(index) {
+
+                    var arquivo = this.$refs.arquivos[index].files;
+
+                    this.anexos[index].Nome = arquivo[0].name;
+                },
+
+                validarAnexos() {
+
+                    $('.nav-tabs a[href="#kt_tabs_7_6"]').tab('show');
+                },
+
+                adicionarImagem() {
+
+                    this.imagens.push({ Nome: 'Imagem' });
+                },
+
+                imagemSelecionada(index) {
+
+                    this.imagens[index].Nome = this.$refs.imagens[index].files[0].name;
+                },
+
+                validarImagens() {
+
+                    let self = this;
+
+                    self.ordemServico.OrdemServicoMotivoNome = self.motivos.filter(x => { return x.ID == self.ordemServico.OrdemServicoMotivoID })[0].Nome.toUpperCase();
+                    self.ordemServico.Campos.FilialOrigemNome = self.filiaisOrigem.filter(x => { return x.ID == self.ordemServico.Campos.FilialOrigemID })[0].Nome.toUpperCase();
+                    self.ordemServico.Campos.LocalOrigemNome = self.locaisOrigem.filter(x => { return x.ID == self.ordemServico.Campos.LocalOrigemID })[0].CaminhoPao.toUpperCase();
+
+                    if (self.motivoSelecionado.CamposVinculados.indexOf('FilialDestinoID') >= 0)
+                        self.ordemServico.Campos.FilialDestinoNome = self.filiaisDestino.filter(x => { return x.ID == self.ordemServico.Campos.FilialDestinoID })[0].Nome.toUpperCase();
+
+                    if (self.motivoSelecionado.CamposVinculados.indexOf('LocalDestinoID') >= 0)
+                        self.ordemServico.Campos.LocalDestinoNome = self.locaisDestino.filter(x => { return x.ID == self.ordemServico.Campos.LocalDestinoID })[0].CaminhoPao.toUpperCase();
+
+                    if (self.motivoSelecionado.CamposVinculados.indexOf('ResponsavelDestinoID') >= 0)
+                        self.ordemServico.Campos.ResponsavelDestinoNome = self.responsaveis.filter(x => { return x.ID == self.ordemServico.Campos.ResponsavelDestinoID })[0].Nome.toUpperCase();
+
+                    if (self.motivoSelecionado.CamposVinculados.indexOf('GrupoID') >= 0) {
+
+                        let grupo = self.grupos.filter(x => { return x.ID == self.ordemServico.Campos.GrupoID })[0];
+
+                        self.ordemServico.Campos.GrupoNome = grupo.Codigo.toUpperCase() + ' ' + grupo.Nome.toUpperCase();
+                    }
+
+                    if (self.motivoSelecionado.CamposVinculados.indexOf('EspecieID') >= 0) {
+
+                        let especie = self.especies.filter(x => { return x.ID == self.ordemServico.Campos.EspecieID })[0];
+
+                        self.ordemServico.Campos.EspecieNome = especie.Codigo.toUpperCase() + ' ' + especie.Nome.toUpperCase();
+                    }
+
+
+                    $('.nav-tabs a[href="#kt_tabs_7_7"]').tab('show');
+                },
+
+                salvar() {
+
+                    let self = this;
+
+                    axios.request({
+                        url: config.baseURL + 'ordemservico',
+                        data: (self.ordemServico),
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function (resp) {
+
+                        self.ordemServico.ID = resp.data.ID;
+
+                        self.salvarArquivos();
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                salvarArquivos() {
+
+                    var self = this;
+
+                    let formData = new FormData();
+
+                    var hasFiles = false;
+
+                    if (self.$refs.arquivos != undefined) {
+
+                        for (var i = 0; i < self.$refs.arquivos.length; i++) {
+
+                            formData.append('arquivo_' + i, self.$refs.arquivos[i].files[0]);
+                        }
+
+                        hasFiles = true;
+                    }
+
+                    if (self.$refs.imagens != undefined) {
+
+                        for (var i = 0; i < self.$refs.imagens.length; i++) {
+
+                            formData.append('imagem_' + i, self.$refs.imagens[i].files[0]);
+                        }
+
+                        hasFiles = true;
+                    }
+
+                    if (hasFiles) {
+
+                        axios.request({
+                            url: config.baseURL + 'ordemservico/enviaranexos/' + self.ordemServico.ID,
+                            data: formData,
+                            method: 'PUT',
+                            headers: {
+                                "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                            }
+                        }).then(function (resp) {
+
+                            Swal.fire({
+                                type: 'success',
+                                title: 'Parabéns',
+                                text: 'Ordem de Serviço Salva com Sucesso!',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                onClose: () => {
+                                    clearInterval(timerInterval);
+                                    window.location.href = config.baseURLWeb + '/ordemServico';
+                                }
+                            });
+
+                        }).catch(function (erro) {
+
+                            Swal.fire({
+                                type: 'error',
+                                title: 'Erro',
+                                text: erro.response.data.Message
+                            });
+                        });
+                    }
+                    else {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Ordem de Serviço Salva com Sucesso!',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/ordemServico';
+                            }
+                        });
+                    }
+                }
+            },
+            mounted() {
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/ordemservico', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if (data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                        else {
+
+                            self.listarMotivos();
+                            self.listarFiliais();
+                            self.listarResponsaveis();
+                            self.listarGrupos();
+                        }
+                    });
+
+            }
+        });
+
+    </script>
+}

@@ -1,0 +1,207 @@
+﻿<div class="kt-portlet">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Responsáveis
+            </h3>
+        </div>
+    </div>
+
+    <!--begin::Form-->
+    <form class="kt-form" id="responsavel-form" v-on:submit.prevent="salvar">
+        <div class="kt-portlet__body">
+            <div class="form-group row">
+                <div class="col-md-4 col-sm-12">
+                    <label>Matrícula</label>
+                    <input type="text" class="form-control" placeholder="Entre com a Matrícula" v-model="responsavel.Matricula">
+                </div>
+                <div class="col-md-8 col-sm-12">
+                    <label>Nome <small class="invalid-feedback">(Obrigatório)</small></label>
+                    <input type="text" class="form-control" placeholder="Entre com o Nome do Resposável" required v-model="responsavel.Nome">
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <label>Cargo</label>
+                    <input type="text" class="form-control" placeholder="Entre com o Cargo do Responsável" v-model="responsavel.Cargo">
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <label>Login Vinculado</label>
+                    <select class="form-control kt-select2" v-model="responsavel.UsuarioID">
+                        <option value="" selected>- Sem Vínculo de Login -</option>
+                        <optgroup label="Administradores">
+                            <option v-for="usuario in usuariosADM" v-bind:value="usuario.ID">{{usuario.Nome}} ({{usuario.Email}})</option>
+                        </optgroup>
+                        <optgroup label="Usuários da Empresa">
+                            <option v-for="usuario in usuarios" v-bind:value="usuario.ID">{{usuario.Nome}} ({{usuario.Email}})</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+                <button type="button" class="btn btn-danger" onclick="history.go(-1)">Voltar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#responsavel-form',
+            data() {
+                return {
+                    usuarios: {},
+                    usuariosADM: {},
+                    responsavel: {
+                        ID: 0,
+                        EmpresaID: localStorage.getItem('empresaID'),
+                        Matricula: '',
+                        Nome: '',
+                        Cargo: '',
+                        UsuarioID: ''
+                    },
+                    errors: {}
+                };
+            },
+
+            methods: {
+
+                listarUsuarios() {
+
+                    let self = this;
+
+                    api.get('usuario/getByEmpresaID/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            self.usuarios = data;
+
+                        });
+
+                },
+
+                listarUsuariosADM() {
+
+                    let self = this
+
+                    api.get('usuario/getUsuarios', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            self.usuariosADM = data.filter(x => { return x.PerfilID == 1 });
+
+                        });
+
+                },
+
+                salvar() {
+
+                    const { responsavel } = this;
+
+                    let urlReq = config.baseURL + 'responsavel';
+
+                    let metodo = 'post';
+
+                    if (responsavel.ID) {
+                        urlReq = urlReq + '/' + responsavel.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (responsavel)
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Responsável salvo com sucesso',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/responsavel';
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editar(id) {
+
+                    api.get('responsavel/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.responsavel = data;
+                        });
+                }
+            },
+
+            created: function () {
+
+                const id = this.getId();
+
+                if (id) {
+                    this.editar(id);
+                }
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/responsavel', true)
+                    .then(({ data, errors }) => {
+                        self.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if ((id && data.indexOf('PUT') < 0) || !id && data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                        else {
+
+                            self.listarUsuarios();
+                            self.listarUsuariosADM();
+                        }
+                            
+                    });
+
+
+            }
+        });
+
+    </script>
+}

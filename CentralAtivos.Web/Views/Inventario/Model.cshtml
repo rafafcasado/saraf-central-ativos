@@ -1,0 +1,673 @@
+﻿<link href="~/Content/css/wizard-1.css" rel="stylesheet" />
+<style>
+
+    .kt-wizard-v2 .kt-wizard-v2__wrapper .kt-form {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .kt-wizard-v3 .kt-wizard-v3__wrapper .kt-form {
+        width: 100%;
+        padding: 25px;
+    }
+</style>
+
+<div class="kt-portlet" id="inventario-form">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Inventário
+            </h3>
+        </div>
+    </div>
+
+    <div class="kt-grid  kt-wizard-v1 kt-wizard-v1--white" id="kt_wizard_v1" data-ktwizard-state="first">
+        <div class="kt-grid__item">
+
+            <!--begin: Form Wizard Nav -->
+            <div class="kt-wizard-v1__nav">
+                <div class="kt-wizard-v1__nav-items">
+                    <a class="kt-wizard-v1__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="current">
+                        <div class="kt-wizard-v1__nav-body">
+                            <div class="kt-wizard-v1__nav-icon">
+                                <i class="flaticon2-document"></i>
+                            </div>
+                            <div class="kt-wizard-v1__nav-label">
+                                Dados Principais
+                            </div>
+                        </div>
+                    </a>
+                    <a class="kt-wizard-v1__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="pending">
+                        <div class="kt-wizard-v1__nav-body">
+                            <div class="kt-wizard-v1__nav-icon">
+                                <i class="flaticon-squares-4"></i>
+                            </div>
+                            <div class="kt-wizard-v1__nav-label">
+                                Filiais
+                            </div>
+                        </div>
+                    </a>
+                    <a class="kt-wizard-v1__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="pending">
+                        <div class="kt-wizard-v1__nav-body">
+                            <div class="kt-wizard-v1__nav-icon">
+                                <i class="flaticon-squares-3"></i>
+                            </div>
+                            <div class="kt-wizard-v1__nav-label">
+                                Locais
+                            </div>
+                        </div>
+                    </a>
+                    <a class="kt-wizard-v1__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="pending">
+                        <div class="kt-wizard-v1__nav-body">
+                            <div class="kt-wizard-v1__nav-icon">
+                                <i class="flaticon-users"></i>
+                            </div>
+                            <div class="kt-wizard-v1__nav-label">
+                                Equipe
+                            </div>
+                        </div>
+                    </a>
+                    <a class="kt-wizard-v1__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="pending">
+                        <div class="kt-wizard-v1__nav-body">
+                            <div class="kt-wizard-v1__nav-icon">
+                                <i class="flaticon2-checkmark"></i>
+                            </div>
+                            <div class="kt-wizard-v1__nav-label">
+                                Finalização
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!--end: Form Wizard Nav -->
+        </div>
+
+
+        <!--begin: Form Wizard Form-->
+        <form class="kt-form" id="kt_form" novalidate="novalidate">
+
+            <div class="kt-grid__item kt-grid__item--fluid kt-wizard-v1__wrapper">
+
+                <div class="kt-wizard-v1__content w-100" data-ktwizard-type="step-content" data-ktwizard-state="current">
+                    <div class="kt-form__section kt-form__section--first">
+                        <div class="kt-wizard-v1__form w-100">
+                            <div class="row justify-content-around pt-4 pl-5 pr-5">
+                                <div class="col-4">
+                                    <label>Código</label>
+                                    <input type="text" class="form-control" v-model="inventario.Codigo" />
+                                </div>
+                                <div class="col-8">
+                                    <label>Nome</label>
+                                    <input type="text" class="form-control" v-model="inventario.Nome" />
+                                </div>
+                            </div>
+                            <div class="row pt-4 pl-5 pr-5">
+                                <div class="col-6">
+                                    <div class="kt-radio-list">
+                                        <label class="kt-radio kt-radio--solid kt-radio--brand">
+                                            <input type="radio" name="radio7" value="false" v-model="inventario.Geral">Rotativo
+                                            <span></span>
+                                        </label>
+                                        <div class="border p-3">
+                                            <p>Neste modelo você terá a possibilidade de escolher a filial e os locais</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="kt-radio-list">
+                                        <label class="kt-radio kt-radio--solid kt-radio--success">
+                                            <input type="radio" name="radio7" value="true" v-model="inventario.Geral">Geral
+                                            <span></span>
+                                        </label>
+                                        <div class="border p-3">
+                                            <p>Neste modelo você escolherá apenas a Equipe</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="kt-wizard-v1__content w-100" data-ktwizard-type="step-content">
+
+                    <div class="kt-form__section kt-form__section--first">
+                        <div class="kt-wizard-v1__form w-100">
+                            <div class="kt-form__section kt-form__section--first">
+                                <div class="kt-wizard-v1__form pt-5 pl-5 pr-5">
+                                    <div>
+                                        <h4>Filiais Disponíveis</h4>
+                                        <hr />
+                                        <div class="row">
+                                            <button type="button" class="btn btn-secondary mb-3 mr-3" v-for="(filial, index) in filiais" v-on:click="selecionarFilial(index)">{{filial.Nome}}</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-5">
+                                        <h4>Filiais Selecionadas</h4>
+                                        <hr />
+                                        <div class="row">
+                                            <button type="button" class="btn btn-success mb-3 mr-3" v-for="(filial, index) in inventario.Filiais" v-on:click="removerFilial(index)"><i class="fas fa-check fa-sm"></i>{{filial.Nome}}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="kt-wizard-v1__content w-100" data-ktwizard-type="step-content">
+
+                    <div class="kt-form__section kt-form__section--first">
+                        <div class="kt-wizard-v1__form w-100">
+                            <div class="kt-form__section kt-form__section--first">
+                                <div class="kt-wizard-v1__form p-5">
+                                    <h5>Selecione um Local para adicionar à lista</h5>
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <select class="form-control kt-select2 select2-hidden-accessible" id="kt_select2_3" name="param" style="width: 100% !important;" data-select2-id="kt_select2_3" tabindex="-1" aria-hidden="true" v-bind:required="!inventario.Geral">
+                                                <option v-for="(local, index) in locais" v-bind:value="local.ID">{{local.CaminhoPao}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-4">
+                                            <button type="button" class="btn btn-primary" v-on:click="incluirLocal()" title="Incluir Local">&nbsp;<i class="fas fa-sm fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="card">
+                                        <div class="card-header">Locais Selecionados</div>
+                                        <div class="card-body">
+                                            <table class="table table-bordered">
+                                                <tr v-for="(local, index) in inventario.Locais">
+                                                    <td>{{local.CaminhoPao}}</td>
+                                                    <td><button class="btn btn-sm btn-danger" v-on:click="removerLocal(index)" title="Excluir Local">&nbsp;<i class="fas fa-trash"></i></button></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--end: Form Wizard Step 1-->
+                <!--begin: Form Wizard Step 2-->
+                <div class="kt-wizard-v1__content" data-ktwizard-type="step-content">
+                    <!-- <div class="kt-heading kt-heading--md text-center">Gerencie a participação da sua equipe</div> -->
+                    <div class="kt-form__section kt-form__section--first">
+                        <div class="kt-wizard-v1__form">
+                            <div class="row justify-content-center">
+                                <div class="col text-center">
+                                    <table class="table text-center">
+                                        <thead>
+                                            <tr>
+                                                <td></td>
+                                                <td>Nome</td>
+                                                <td>Login</td>
+                                                <td>Perfil</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="usuario in usuariosFiltrados">
+                                                <td><input type="checkbox" name="chkUsuarioSelecionado" v-bind:data-usuarioid="usuario.ID" /></td>
+                                                <td name="nome">{{usuario.Nome}}</td>
+                                                <td name="email">{{usuario.Email}}</td>
+                                                <td>
+                                                    <select name="perfil" v-model="usuario.PerfilID">
+                                                        <option v-for="perfil in perfis" v-bind:value="perfil.ID">{{perfil.Nome}}</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--end: Form Wizard Step 2-->
+                <!--begin: Form Wizard Step 3-->
+                <!--end: Form Wizard Step 3-->
+                <!--begin: Form Wizard Step 5-->
+                <div class="kt-wizard-v1__content" data-ktwizard-type="step-content">
+                    <!-- <div class="kt-heading kt-heading--md text-center">Pronto para finalizar</div> -->
+                    <div class="kt-form__section kt-form__section--first">
+                        <div class="kt-wizard-v1__review">
+                            <div class="kt-portlet">
+                                <div class="kt-portlet__body">
+                                    <div class="row mb-5">
+                                        <div class="col-4">
+                                            <label>Código</label>
+                                            <input type="text" class="form-control" v-bind:value="inventario.Codigo" disabled />
+                                        </div>
+                                        <div class="col-8">
+                                            <label>Nome</label>
+                                            <input type="text" class="form-control" v-bind:value="inventario.Nome" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="kt-notes">
+                                        <div class="kt-notes__items">
+                                            <div class="kt-notes__item">
+                                                <div class="kt-notes__media">
+                                                    <span class="kt-notes__icon">
+                                                        <i class="flaticon2-document kt-font-brand"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="kt-notes__content">
+                                                    <div class="kt-notes__section">
+                                                        <div class="kt-notes__info">
+                                                            <a class="kt-notes__title">
+                                                                Tipo
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <span class="kt-notes__body">
+                                                        <button disabled class="btn btn-outline-secondary" v-if="inventario.Geral === 'true'"><i class="fas fa-thumbtack"></i> Geral</button>
+                                                        <button disabled class="btn btn-outline-secondary" v-else><i class="fas fa-thumbtack"></i> Rotativo</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="kt-notes__item">
+                                                <div class="kt-notes__media">
+                                                    <span class="kt-notes__icon">
+                                                        <i class="flaticon-squares-4 kt-font-brand"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="kt-notes__content">
+                                                    <div class="kt-notes__section">
+                                                        <div class="kt-notes__info">
+                                                            <a class="kt-notes__title">
+                                                                Filiais
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <span class="kt-notes__body">
+                                                        <button disabled class="btn btn-outline-secondary mr-1" v-for="filial in inventario.Filiais"><i class="fas fa-thumbtack"></i> {{filial.Nome}}</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="kt-notes__item" v-if="inventario.Locais.length > 0">
+                                                <div class="kt-notes__media">
+                                                    <span class="kt-notes__icon">
+                                                        <i class="flaticon-squares-3 kt-font-brand"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="kt-notes__content">
+                                                    <div class="kt-notes__section">
+                                                        <div class="kt-notes__info">
+                                                            <a class="kt-notes__title">
+                                                                Locais
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <span class="kt-notes__body">
+                                                        <button disabled class="btn btn-outline-secondary mr-1" v-for="local in inventario.Locais"><i class="fas fa-thumbtack"></i> {{local.CaminhoPao}}</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="kt-notes__item">
+                                                <div class="kt-notes__media">
+                                                    <span class="kt-notes__icon">
+                                                        <i class="flaticon-users kt-font-brand"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="kt-notes__content">
+                                                    <div class="kt-notes__section">
+                                                        <div class="kt-notes__info">
+                                                            <a class="kt-notes__title">
+                                                                Equipe
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <span class="kt-notes__body">
+                                                        <button disabled class="btn btn-outline-secondary mr-1" v-for="usuario in inventario.Usuarios"><i class="fas fa-thumbtack"></i> {{usuario.Nome}}<br />{{usuario.PerfilNome}}</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+            <!--end: Form Wizard Step 5-->
+            <!--begin: Form Actions -->
+            <div class="kt-form__actions float-right pb-5 pr-5">
+                <button id="btnAnterior" type="button" class="btn btn-secondary btn-md btn-tall btn-wide kt-font-bold kt-font-transform-u" data-ktwizard-type="action-prev" v-on:click="anterior">
+                    Anterior
+                </button>
+                <button type="button" class="btn btn-success btn-md btn-tall btn-wide kt-font-bold kt-font-transform-u" v-on:click="salvar" v-if="passoAtual == 5">
+                    Criar Inventário
+                </button>
+                <button id="btnProximo" type="button" class="btn btn-brand btn-md btn-tall btn-wide kt-font-bold kt-font-transform-u" data-ktwizard-type="action-next" v-on:click="proximo">
+                    Próximo
+                </button>
+            </div>
+
+            <!--end: Form Actions -->
+        </form>
+
+        <!--end: Form Wizard Form-->
+    </div>
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+<script src="~/Content/js/wizard-1.js"></script>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#inventario-form',
+            data() {
+                return {
+                    passoAtual: 1,
+                    empresaID: localStorage.getItem('empresaID'),
+                    inventario: {
+                        ID: 0,
+                        Codigo: '',
+                        Nome: '',
+                        EmpresaID: localStorage.getItem('empresaID'),
+                        StatusID: 1, //NOVO
+                        Geral: 'false',
+                        Filiais: [],
+                        Locais: [],
+                        Usuarios: []
+                    },
+                    filiais: [],
+                    locais: [],
+                    usuarios: [],
+                    perfis: [],
+                    errors: []
+                };
+            },
+
+            methods: {
+
+                listarFiliais() {
+
+                    api.get('filial/getByEmpresaID/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.filiais = data;
+                        });
+                },
+
+                listarUsuarios() {
+
+                    api.get('usuario/getUsuarios', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.usuarios = data;
+                        });
+                },
+
+                listarPerfis() {
+
+                    api.get('perfil/getPerfis', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.perfis = data;
+                        });
+                },
+
+                proximo() {
+
+                    if (this.passoAtual == 1 && (this.inventario.Codigo.length == 0 || this.inventario.Nome.length == 0)) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: 'Favor preencher os campos Codigo e Nome',
+                            onClose: () => {
+                                $('#btnAnterior').click();
+                            }
+                        });
+
+                        this.passoAtual += 1;
+                        return;
+                    }
+
+                    if (this.passoAtual == 2) {
+
+                        if (this.inventario.Filiais.length == 0) {
+
+                            Swal.fire({
+                                type: 'error',
+                                title: 'Erro',
+                                text: 'Para continuar é preciso selecionar, ao menos, uma Filial',
+                                onClose: () => {
+                                    $('#btnAnterior').click();
+                                }
+                            });
+
+                            this.passoAtual += 1;
+                            return;
+                        }
+                        else {
+
+                            let param = '';
+
+                            for (var i = 0; i < this.inventario.Filiais.length; i++) {
+
+                                param += this.inventario.Filiais[i].ID.toString() + ',';
+                            }
+
+                            param = param.substr(0, param.length - 1);
+
+                            api.get('local/getAllByManyFiliaisID/' + param, true)
+                                .then(({ data, errors }) => {
+                                    this.errors = errors || {};
+                                    if (errors) {
+                                        return;
+                                    }
+                                    this.locais = data;
+                                });
+
+                            if (this.inventario.Geral === 'true')
+                                $('#btnProximo').click();
+                        }
+                    }
+
+                    if (this.passoAtual == 3 && !this.inventario.Geral && this.inventario.Locais.length == 0) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: 'Para continuar é preciso selecionar, ao menos, um Local',
+                            onClose: () => {
+                                $('#btnAnterior').click();
+                            }
+                        });
+
+                        this.passoAtual += 1;
+                        return;
+                    }
+
+                    if (this.passoAtual == 5)
+                        this.finalizacao();
+
+                    this.passoAtual += 1;
+                },
+
+                anterior() {
+
+                    if (this.inventario.Geral === 'true' && this.passoAtual == 4)
+                        $('#btnAnterior').click();
+
+                    if (this.passoAtual > 1)
+                        this.passoAtual -= 1;
+
+                },
+
+                finalizacao() {
+
+                    let self = this;
+
+                    self.inventario.Usuarios = []
+
+                    $('input[name=chkUsuarioSelecionado]').each(function () {
+
+                        if ($(this).is(':checked')) {
+
+                            self.inventario.Usuarios.push({ UsuarioID: $(this).data('usuarioid'), PerfilID: parseInt($(this).parents('tr').find('select[name=perfil]').val()), Nome: $(this).parents('tr').find('td[name=nome]').html(), PerfilNome: $(this).parents('tr').find('select[name=perfil] option:selected').text() });
+                        }
+                    });
+
+                    if (this.inventario.Usuarios.length == 0)
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: 'É preciso selecionar, ao menos, um usuário participante',
+                            onClose: () => {
+                                $('#btnAnterior').click();
+                            }
+                        });
+                },
+
+                salvar() {
+
+                    const { inventario } = this;
+
+                    let urlReq = config.baseURL + 'inventario';
+
+                    let metodo = 'post';
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (inventario)
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Inventário criado com sucesso',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/inventario';
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                selecionarFilial(index) {
+
+                    let filial = this.filiais[index];
+
+                    this.inventario.Filiais.push(filial);
+                    this.filiais.splice(index, 1);
+                },
+
+                removerFilial(index) {
+
+                    let filial = this.inventario.Filiais[index];
+
+                    this.filiais.push(filial);
+                    this.inventario.Filiais.splice(index, 1);
+                },
+
+                incluirLocal() {
+
+                    let local = this.locais[$('#kt_select2_3 option:selected').index()];
+
+                    this.inventario.Locais.push(local);
+                    this.locais.splice($('#kt_select2_3 option:selected').index(), 1);
+                },
+
+                removerLocal(index) {
+
+                    let local = this.inventario.Locais[index];
+
+                    this.locais.push(local);
+                    this.inventario.Locais.splice(index, 1);
+                }
+
+            },
+            mounted() {
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/inventario', true)
+                    .then(({ data, errors }) => {
+                        self.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if (data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                        else {
+
+                            self.listarFiliais();
+                            self.listarUsuarios();
+                            self.listarPerfis();
+                        }
+
+                    });
+
+
+            },
+            computed: {
+
+                usuariosFiltrados: function () {
+
+                    let self = this;
+
+                    return self.usuarios.filter(function (u) { return (u.EmpresaID === null || u.EmpresaID === parseInt(self.empresaID)) })
+                }
+            }
+        });
+
+    </script>
+}

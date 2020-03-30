@@ -1,0 +1,163 @@
+﻿<div class="kt-portlet">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Coletor
+            </h3>
+        </div>
+    </div>
+
+    <!--begin::Form-->
+    <form class="kt-form" id="coletor-form" v-on:submit.prevent="salvar">
+        <div class="kt-portlet__body">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label>Código</label>
+                    <input type="text" class="form-control" placeholder="Entre com o Código do Coletor" v-model="coletor.Codigo">
+                </div>
+                <div class="col-8">
+                    <label>Nome&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                    <input type="text" class="form-control" placeholder="Entre com o Nome do Coletor" required v-model="coletor.Nome">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label>Marca</label>
+                    <input type="text" class="form-control" placeholder="Entre com a Marca do Coletor" v-model="coletor.Marca">
+                </div>
+                <div class="col-4">
+                    <label>Modelo</label>
+                    <input type="text" class="form-control" placeholder="Entre com o Modelo do Coletor" v-model="coletor.Modelo">
+                </div>
+                <div class="col-4">
+                    <label>Número de Série&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                    <input type="text" class="form-control" placeholder="Entre com o Número de Série do Coletor" required v-model="coletor.NumeroSerie">
+                </div>
+            </div>
+        </div>
+        <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+                <button type="button" class="btn btn-danger" onclick="history.go(-1)">Voltar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#coletor-form',
+            data() {
+                return {
+                    coletor: {
+                        ID: 0,
+                        Codigo: '',
+                        Nome: '',
+                        Marca: '',
+                        Modelo: '',
+                        NumeroSerie: ''
+                    },
+                    errors: {}
+                };
+            },
+
+            methods: {
+
+                salvar() {
+
+                    const { coletor } = this;
+
+                    let urlReq = config.baseURL + 'coletor';
+
+                    let metodo = 'post';
+
+                    if (coletor.ID) {
+                        urlReq = urlReq + '/' + coletor.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (coletor)
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Coletor salvo com sucesso',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/coletor';
+                            }
+                        });
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editar(id) {
+
+                    api.get('coletor/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.coletor = data;
+                        });
+                }
+            },
+
+            created: function () {
+
+                const id = this.getId();
+
+                if (id) {
+                    this.editar(id);
+                }
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/coletor', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if ((id && data.indexOf('PUT') < 0) || !id && data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                    });
+
+            }
+        });
+
+    </script>
+}

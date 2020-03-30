@@ -1,0 +1,547 @@
+﻿<link href="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/cr-1.5.0/datatables.min.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+
+<div id="contas-form">
+    <div class="kt-content  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet kt-portlet--mobile">
+            <div class="kt-portlet__head kt-portlet__head--lg">
+                <div class="kt-portlet__head-label">
+                    <span class="kt-portlet__head-icon">
+                        <i class="kt-font-brand flaticon2-line-chart"></i>
+                    </span>
+                    <h3 class="kt-portlet__head-title">
+                        Lista de Contas Contábeis
+                    </h3>
+                </div>
+                <div class="kt-portlet__head-toolbar">
+                    <div class="kt-portlet__head-wrapper">
+                        <div class="kt-portlet__head-actions">
+                            <button class="btn btn-success btn-brand btn-elevate btn-icon-sm" data-toggle="modal" data-target="#modalUpload" v-if="permissao.indexOf('POST') >= 0">
+                                <i class="la la-upload"></i> Upload
+                            </button>
+                            <button class="btn btn-brand btn-elevate btn-icon-sm" v-on:click="novo" v-if="permissao.indexOf('POST') >= 0">
+                                <i class="la la-plus"></i> Nova Conta Contábil Principal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="kt-portlet__body">
+
+                <div id="kt_table_1_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+
+                    <div class="alert alert-info" v-if="contas.length === undefined || contas.length === 0">Não há nenhuma Conta Contábil Cadastrada</div>
+
+                    <div class="row" v-if="contas.length > 0">
+                        <div class="col-sm-12">
+                            <table class="table table-striped- table-bordered table-hover table-checkable dataTable no-footer collapsed" id="tbContasContabeis" role="grid" aria-describedby="kt_table_1_info" style="width: 857px;">
+                                <thead>
+                                    <tr role="row">
+                                        <th>Código Interno</th>
+                                        <th>Código</th>
+                                        <th>Conta Contábil</th>
+                                        <th>Data de Cadastro</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr role="row" v-for="(conta, index) in contas">
+                                        <td tabindex="0">{{conta.CodigoInterno}}</td>
+                                        <td tabindex="2">{{conta.Codigo}}</td>
+                                        <td tabindex="2"><span v-html="conta.CaminhoPao"></span></td>
+                                        <td tabindex="3">{{conta.DataCadastroFormatada}}</td>
+                                        <td tabindex="4">
+                                            <button class="btn btn-xs btn-secondary btn-icon-sm" v-on:click="incluirSub(index)" title="Incluir Filho" v-if="permissao.indexOf('POST') >= 0">&nbsp;<i class="la la-arrow-down"></i></button>
+                                            <button class="btn btn-xs btn-secondary btn-icon-sm" v-on:click="editar(conta.ID)" title="Editar" v-if="permissao.indexOf('PUT') >= 0">&nbsp;<i class="la la-pencil"></i></button>
+                                            <button class="btn btn-xs btn-secondary btn-icon-sm" v-on:click="excluir(conta.ID)" title="Excluir" v-if="permissao.indexOf('DELETE') >= 0">&nbsp;<i class="la la-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Código Interno</th>
+                                        <th>Código</th>
+                                        <th>Conta Contábil</th>
+                                        <th>Data de Cadastro</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--end::Portlet-->
+        <!--end::Portlet-->
+    </div>
+
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalCadastro">
+        <div class="modal-dialog modal-lg" role="document">
+            <form class="modal-content" v-on:submit.prevent="salvar">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastro de Conta Contábil</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col-md-5 col-sm-12">
+                            <label>Código <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Código da Conta Contábil" required v-model="conta.Codigo">
+                        </div>
+                        <div class="col-md-7 col-sm-12">
+                            <label>Nome Abreviado <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Nome Abreviado da Conta Contábil" required v-model="conta.NomeAbreviado">
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <label>Nome <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Nome da Conta Contábil" required v-model="conta.Nome">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalUpload">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload de Arquivos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="modal-body" v-on:submit.prevent="upload">
+                    <h5>1. Baixe o Modelo</h5>
+                    <p><a href="~/uploads/modelos/modelo-contas-contabeis.csv">Clique aqui para baixar o arquivo modelo</a></p>
+                    <hr />
+                    <br />
+                    <h5>2. Preecha os dados</h5>
+                    <br />
+                    <hr />
+                    <br />
+                    <h5>3. Faça o Upload do Arquivo</h5>
+                    <br />
+                    <p><input type="file" required id="file" ref="file" /></p>
+                    <br />
+                    <hr />
+                    <h5>4. Selecione uma Regra de Upload</h5>
+                    <br />
+                    <p>
+                        <select class="form-control" id="regraUpload">
+                            <option value="1">1. Atualizar: Atualiza os registros atuais e inclui novos</option>
+                            <option value="2">2. Incluir: Apenas inclui novos</option>
+                            <option value="3">3. Limpar: Limpa a base antiga e cria uma nova</option>
+                        </select>
+                    </p>
+                    <br />
+                    <hr />
+                    <button class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/cr-1.5.0/datatables.min.js" type="text/javascript"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.flash.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" type="text/javascript"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js" type="text/javascript"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#contas-form',
+            data() {
+                return {
+                    empresaID: 0,
+                    contas: {},
+                    conta: {
+                        ID: 0,
+                        EmpresaID: localStorage.getItem('empresaID'),
+                        Codigo: '',
+                        Nome: '',
+                        CodigoInterno: 0,
+                        PaiID: null
+                    },
+                    errors: {},
+                    permissao: '',
+                    indiceSelecionado: 0
+                };
+            },
+
+            methods: {
+
+                novo() {
+
+                    this.conta.ID = 0;
+                    this.conta.Codigo = '';
+                    this.conta.Nome = '';
+                    this.conta.NomeAbreviado = '';
+                    this.conta.CodigoInterno = 0;
+                    this.conta.PaiID = null;
+
+                    $('#modalCadastro').modal('show');
+                },
+
+                listar() {
+
+                    api.aguarde();
+
+                    api.get('contaContabil/getall/' + this.empresaID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.contas = data;
+
+                            api.fecharAguarde();
+                        });
+
+                },
+
+                salvar() {
+
+                    const self = this;
+
+                    let urlReq = config.baseURL + 'contaContabil';
+
+                    let metodo = 'post';
+
+                    if (this.conta.ID != 0) {
+                        urlReq = urlReq + '/' + this.conta.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (this.conta)
+                    }).then(function (resp) {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Conta Contábil salva com sucesso!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        $('#modalCadastro').modal('hide');
+
+                        if (self.indiceSelecionado == 0 && metodo == 'post')
+                            self.contas.push({ ID: resp.data.ID, Codigo: resp.data.Codigo, Nome: resp.data.Nome, NomeAbreviado: resp.data.NomeAbreviado, CodigoInterno: resp.data.CodigoInterno, PaiID: resp.data.PaiID, Nivel: 1, plus: true });
+                        else {
+
+                            var contaAlterada = self.contas.filter(x => { return x.ID == resp.data.ID })[0];
+
+                            contaAlterada.Codigo = resp.data.Codigo;
+                            contaAlterada.Nome = resp.data.Nome;
+                            contaAlterada.NomeAbreviado = resp.data.NomeAbreviado;
+                        }
+
+                        self.conta.ID = 0;
+                        self.conta.Codigo = '';
+                        self.conta.Nome = '';
+                        self.conta.NomeAbreviado = '';
+                        self.conta.CodigoInterno = 0;
+                        self.conta.PaiID = null;
+
+                        self.indiceSelecionado = 0;
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                incluirSub(index) {
+
+                    this.indiceSelecionado = index;
+
+                    this.conta.ID = 0;
+                    this.conta.Codigo = '';
+                    this.conta.Nome = '';
+                    this.conta.NomeAbreviado = '';
+                    this.conta.CodigoInterno = 0;
+                    this.conta.PaiID = this.contas[index].ID;
+                    $('#modalCadastro').modal('show');
+                },
+
+                removeConta: function (conta) {
+                    this.contas.splice(this.contas.indexOf(conta), 1);
+                },
+
+                editar(contaID) {
+
+                    api.get('contaContabil/' + contaID, true)
+                        .then(({ data, errors }) => {
+
+                            this.errors = errors || {};
+
+                            if (errors) {
+                                return;
+                            }
+
+                            this.conta = data;
+
+                            $('#modalCadastro').modal('show');
+                        });
+                },
+
+                excluir(id) {
+
+                    var self = this;
+
+                    Swal.fire({
+                        title: 'Deseja realmente excluir essa Conta Contábil?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, Pode excluir.'
+                    }).then((result) => {
+                        if (result.value) {
+
+                            axios.request({
+                                url: config.baseURL + 'contaContabil/' + id,
+                                method: 'delete',
+                                headers: {
+                                    "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                }
+                            }).then(function () {
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Parabéns',
+                                    text: 'Conta Contábil excluída com sucesso',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    onClose: () => {
+
+                                        self.listar();
+                                    }
+                                });
+
+                            }).catch(function (erro) {
+
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: erro.response.data.Message
+                                });
+                            });
+                        }
+                    });
+                },
+
+                upload() {
+
+                    var self = this;
+
+                    let formData = new FormData();
+
+                    formData.append('file', self.$refs.file.files[0]);
+
+                    axios.request({
+                        url: config.baseURL + 'upload/novo/' + localStorage.getItem('empresaID') + '/9/' + $('#regraUpload').val(),
+                        data: formData,
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function (resp) {
+
+                        self.processar(resp.data.ID);
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                processar(id) {
+
+                    var self = this;
+
+                    axios.request({
+                        url: config.baseURL + 'upload/processar/' + id,
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Upload Enviado com Sucesso. Você pode conferir o Status do Processamento na Tela de Administração de Uploads.',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            onClose: () => {
+
+                                clearInterval(timerInterval);
+                                self.listar();
+
+                                $('#modalUpload').modal('hide');
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                }
+            },
+
+            mounted: function () {
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/contacontabil', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        self.permissao = data;
+
+                        if (data.indexOf('GET') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                        else {
+
+                            const id = localStorage.getItem('empresaID');
+
+                            if (id) {
+
+                                self.empresaID = id;
+                                self.listar();
+                            }
+                        }
+                    });
+
+
+
+            },
+
+            watch: {
+                contas() {
+                    if (this.dt) {
+                        this.dt.destroy();
+                    }
+                    this.$nextTick(() => {
+                        this.dt = $('#tbContasContabeis').DataTable({
+                            //colReorder: true,
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'csv',
+                                    text: 'CSV'
+                                },
+                                {
+                                    extend: 'excel',
+                                    text: 'XLS'
+                                },
+                                {
+                                    extend: 'copy',
+                                    text: 'Copiar os Dados'
+                                },
+                                {
+                                    extend: 'colvis',
+                                    text: 'Colunas Disponíveis'
+                                }
+                            ],
+
+                            "oLanguage": {
+
+                                "sSearch": "Pesquisar:",
+
+                                "oPaginate": {
+
+                                    "sPrevious": "Anterior",
+                                    "sNext": "Próximo"
+                                },
+
+                                "sInfo": "Mostrando _START_ até _END_ de _TOTAL_ registros"
+
+                            },
+                            "columnDefs": [
+                                {
+                                    "targets": [0],
+                                    "visible": false,
+                                    "searchable": false
+                                }
+                            ]
+                        });
+
+                        $('#tbContasContabeis tfoot th').not(':last').each(function () {
+                            var title = $(this).text();
+                            $(this).html('<input type="text" style="width: 100%" />');
+                        });
+
+                        this.dt.columns().every(function () {
+                            var that = this;
+
+                            $('input', this.footer()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that
+                                        .search(this.value)
+                                        .draw();
+                                }
+                            });
+                        });
+
+                        $('#tbContasContabeis tfoot tr').appendTo('#tbContasContabeis thead');
+                    });
+
+                }
+            }
+        });
+
+    </script>
+}

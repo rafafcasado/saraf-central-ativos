@@ -1,0 +1,70 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentralAtivos.API", "CentralAtivos.API\CentralAtivos.API.csproj", "{400F06D6-8D09-4D2E-9E70-0AB859C3D1FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentralAtivos.Domain", "CentralAtivos.Domain\CentralAtivos.Domain.csproj", "{794EA289-D539-4025-BC71-C1B17DA1DDD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentralAtivos.Repository", "CentralAtivos.Repository\CentralAtivos.Repository.csproj", "{23C55975-56EB-413E-A10C-8963DFA2605A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentralAtivos.Helpers", "CentralAtivos.Helpers\CentralAtivos.Helpers.csproj", "{9423526B-8C16-4F8D-9E5C-807D5FD078F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentralAtivos.Web", "CentralAtivos.Web\CentralAtivos.Web.csproj", "{81C4E17E-9685-41E7-9A18-9378C6268912}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{400F06D6-8D09-4D2E-9E70-0AB859C3D1FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{400F06D6-8D09-4D2E-9E70-0AB859C3D1FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{400F06D6-8D09-4D2E-9E70-0AB859C3D1FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{400F06D6-8D09-4D2E-9E70-0AB859C3D1FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{794EA289-D539-4025-BC71-C1B17DA1DDD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{794EA289-D539-4025-BC71-C1B17DA1DDD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{794EA289-D539-4025-BC71-C1B17DA1DDD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{794EA289-D539-4025-BC71-C1B17DA1DDD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23C55975-56EB-413E-A10C-8963DFA2605A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23C55975-56EB-413E-A10C-8963DFA2605A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23C55975-56EB-413E-A10C-8963DFA2605A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23C55975-56EB-413E-A10C-8963DFA2605A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9423526B-8C16-4F8D-9E5C-807D5FD078F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9423526B-8C16-4F8D-9E5C-807D5FD078F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9423526B-8C16-4F8D-9E5C-807D5FD078F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9423526B-8C16-4F8D-9E5C-807D5FD078F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81C4E17E-9685-41E7-9A18-9378C6268912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81C4E17E-9685-41E7-9A18-9378C6268912}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81C4E17E-9685-41E7-9A18-9378C6268912}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81C4E17E-9685-41E7-9A18-9378C6268912}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4BF08DD0-8141-4A78-926A-64457B53BEB0}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 6
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://pontualsys.visualstudio.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = CentralAtivos.API\\CentralAtivos.API.csproj
+		SccProjectName1 = CentralAtivos.API
+		SccLocalPath1 = CentralAtivos.API
+		SccProjectUniqueName2 = CentralAtivos.Domain\\CentralAtivos.Domain.csproj
+		SccProjectName2 = CentralAtivos.Domain
+		SccLocalPath2 = CentralAtivos.Domain
+		SccProjectUniqueName3 = CentralAtivos.Helpers\\CentralAtivos.Helpers.csproj
+		SccProjectName3 = CentralAtivos.Helpers
+		SccLocalPath3 = CentralAtivos.Helpers
+		SccProjectUniqueName4 = CentralAtivos.Repository\\CentralAtivos.Repository.csproj
+		SccProjectName4 = CentralAtivos.Repository
+		SccLocalPath4 = CentralAtivos.Repository
+		SccProjectUniqueName5 = CentralAtivos.Web\\CentralAtivos.Web.csproj
+		SccProjectName5 = CentralAtivos.Web
+		SccLocalPath5 = CentralAtivos.Web
+	EndGlobalSection
+EndGlobal

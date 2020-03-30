@@ -1,0 +1,193 @@
+﻿<div class="kt-portlet kt-portlet--mobile" id="filiais-form">
+    <div class="kt-portlet__head kt-portlet__head--lg">
+        <div class="kt-portlet__head-label">
+            <span class="kt-portlet__head-icon">
+                <i class="kt-font-brand flaticon2-line-chart"></i>
+            </span>
+            <h3 class="kt-portlet__head-title">
+                Gerenciamento de Locais
+            </h3>
+        </div>
+        <div class="kt-portlet__head-toolbar">
+            <div class="kt-portlet__head-wrapper">
+                <div class="kt-portlet__head-actions">
+                    <button class="btn btn-success btn-brand btn-elevate btn-icon-sm" data-toggle="modal" data-target="#modalUpload" v-if="permissao.indexOf('POST') >= 0">
+                        <i class="la la-upload"></i> Upload
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="kt-portlet__body">
+        <fieldset>
+            <legend>De qual Filial você quer Gerenciar os Locais?</legend>
+            <hr />
+            <div class="row">
+                <div class="col-md-2 col-sm-12 mb-3" v-for="filial in filiais"><a v-bind:href="config.baseURLWeb + '/local/index/' + filial.ID" style="width: 100%; min-height: 100px;" class="btn btn-lg btn-secondary">{{filial.Nome}}</a></div>
+            </div>
+
+        </fieldset>
+
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalUpload">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload de Arquivos - Locais</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="modal-body" v-on:submit.prevent="upload">
+                    <h5>1. Baixe o Modelo</h5>
+                    <p><a href="~/uploads/modelos/modelo-locais.csv">Clique aqui para baixar o arquivo modelo</a></p>
+                    <hr />
+                    <br />
+                    <h5>2. Preecha os dados</h5>
+                    <br />
+                    <hr />
+                    <br />
+                    <h5>3. Faça o Upload do Arquivo</h5>
+                    <br />
+                    <p><input type="file" required id="file" ref="file" /></p>
+                    <br />
+                    <hr />
+                    <h5>4. Selecione uma Regra de Upload</h5>
+                    <br />
+                    <p>
+                        <select class="form-control" id="regraUpload">
+                            <option value="1">1. Atualizar: Atualiza os registros atuais e inclui novos</option>
+                            <option value="2">2. Incluir: Apenas inclui novos</option>
+                            <option value="3">3. Limpar: Limpa a base antiga e cria uma nova</option>
+                        </select>
+                    </p>
+                    <br />
+                    <hr />
+                    <button class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#filiais-form',
+            data() {
+                return {
+                    filiais: {},
+                    errors: {},
+                    permissao: ''
+                };
+            },
+
+            methods: {
+
+                listar() {
+
+                    api.get('filial/getByEmpresaID/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.filiais = data;
+                        });
+
+                },
+
+                upload() {
+
+                    var self = this;
+
+                    let formData = new FormData();
+
+                    formData.append('file', self.$refs.file.files[0]);
+
+                    $('#modalUpload').modal('hide');
+
+                    api.aguarde();
+
+                    axios.request({
+                        url: config.baseURL + 'upload/novo/' + localStorage.getItem('empresaID') + '/7/' + $('#regraUpload').val(),
+                        data: formData,
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function (resp) {
+
+                        self.processar(resp.data.ID);
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                processar(id) {
+
+                    var self = this;
+
+                    axios.request({
+                        url: config.baseURL + 'upload/processar/' + id,
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function () {
+
+                        api.fecharAguarde();
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Upload Enviado com Sucesso. Você pode conferir o Status do Processamento na Tela de Administração de Uploads.',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            onClose: () => {
+
+                                clearInterval(timerInterval);
+                                self.listar();                                
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                }
+
+            },
+            mounted() {
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/local', true)
+                    .then(({ data, errors }) => {
+                        self.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        self.permissao = data;
+
+                        self.listar();
+                    });
+            }
+        });
+
+    </script>
+}

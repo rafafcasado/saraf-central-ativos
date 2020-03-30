@@ -1,0 +1,814 @@
+﻿<style type="text/css">
+    #map {
+        width: 100%;
+        height: 400px;
+        background-color: grey;
+    }
+</style>
+
+<div class="kt-portlet" id="item-form">
+    <span class="badge badge-info" v-if="item.StatusID">{{item.StatusNome}}</span>
+    <span class="badge badge-success" v-else>NOVO</span>
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Item
+            </h3>
+        </div>
+    </div>
+
+    <form class="kt-form" v-on:submit.prevent="salvar">
+        <div class="kt-portlet__body">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label>Filial</label>
+                    <select class="form-control" v-model="item.Local.FilialID">
+                        <option value="0">- Selecione uma Filial -</option>
+                        <option v-for="filial in filiais" v-bind:value="filial.ID">{{filial.Codigo}} - {{filial.Nome}}</option>
+                    </select>
+                </div>
+                <div class="col-8">
+                    <label>Local&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Pesquise o Local Desejado" v-model="item.Local.CaminhoPao" disabled>
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button" v-bind:disabled="parseInt(item.Local.FilialID) == 0" onclick="$('#modalPesquisaLocal').modal('show')">Pesquisar</button>
+                        </div>
+                    </div>
+                    @*<select class="form-control kt-select2" id="kt_select2_1" v-model="item.LocalID" required v-bind:disabled="locais.length == 0">
+                            <option value="0">- Selecione um Local -</option>
+                            <option v-for="local in locais" v-bind:value="local.ID">{{local.Codigo}} - {{local.CaminhoPao}}</option>
+                        </select>*@
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label>Código&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                    <input id="txtCodigo" type="text" class="form-control" placeholder="Entre com o Código do Item" required disabled v-model="item.Codigo" v-bind:disabled="parseInt(item.Local.FilialID) === 0" v-on:change="verificaSeExiste">
+                </div>
+                <div class="col-1" style="padding-top: 26px;">
+                    <input type="number" class="form-control" required value="0" v-model="item.Incorporacao" v-bind:disabled="parseInt(item.Local.FilialID) === 0" v-on:change="verificaSeExiste">
+                </div>
+                <div class="col-8">
+                    <label>Nome</label>
+                    <input type="text" class="form-control" disabled v-model="item.Nome">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label>Código Anterior</label>
+                    <input type="text" class="form-control" placeholder="Entre com o Código Anterior do Item" v-model="item.CodigoAnterior">
+                </div>
+                <div class="col-1" style="padding-top: 26px;">
+                    <input type="number" class="form-control" value="0" v-model="item.IncorporacaoAnterior">
+                </div>
+                <div class="col-4 left">
+                    <label>Responsável</label>
+                    <select class="form-control" v-model="item.ResponsavelID">
+                        <option value="null">- Selecione um Responsável -</option>
+                        <option v-for="resp in responsaveis" v-bind:value="resp.ID">{{resp.Nome}}</option>
+                    </select>
+                </div>
+                <div class="col-4 left">
+                    <label>Estado do Item&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                    <select class="form-control" required v-model="item.ItemEstadoID">
+                        <option value="0">- Selecione o Estado do Item -</option>
+                        <option v-for="estado in estados" v-bind:value="estado.ID">{{estado.Nome}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">Grupo/Espécie/Propriedades</div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-6">
+                                    <label>Grupo&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                                    <select class="form-control" v-model="item.Especie.GrupoID" required v-on:change="listarEspecies">
+                                        <option value="0">- Selecione um Grupo -</option>
+                                        <option v-for="grupo in grupos" v-bind:value="grupo.ID">{{grupo.Codigo}} {{grupo.Nome}}</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label>Espécie&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                                    <select id="ddlEspecie" class="form-control" required v-model="item.EspecieID" v-bind:disabled="especies.length == 0" v-on:change="listarPropriedades">
+                                        <option value="0">- Selecione uma Espécie -</option>
+                                        <option v-for="especie in especies" v-bind:value="especie.ID">{{especie.Codigo}} {{especie.Nome}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <h4>Propriedades</h4>
+                            <hr />
+                            <div class="row pt-2 pb-2" v-for="(prop, index) in propriedades">
+                                <input type="hidden" v-bind:value="prop.ID" v-model="item.PropriedadesValores[index].PropriedadeID" />
+                                <div class="col-4">{{prop.Propriedade.Nome}}</div>
+                                <div class="col-8" v-if="!prop.Propriedade.Fixa"><input type="text" class="form-control" required v-model="item.PropriedadesValores[index].Valor" /></div>
+                                <div class="col-8" v-else>
+                                    <select class="form-control" required v-model="item.PropriedadesValores[index].PropriedadeValorID">
+                                        <option value="">- Selecione -</option>
+                                        <option v-for="valor in prop.Propriedade.Valores" v-bind:value="valor.ID">{{valor.Valor}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-2">
+                    <label>Tag</label>
+                    <input type="text" class="form-control" placeholder="Entre com a TAG" v-model="item.Tag">
+                </div>
+                <div class="col-3">
+                    <label>Marca</label>
+                    <input type="text" class="form-control" placeholder="Entre com a Marca" v-model="item.Marca">
+                </div>
+                <div class="col-3">
+                    <label>Modelo</label>
+                    <input type="text" class="form-control" placeholder="Entre com o Modelo" v-model="item.Modelo">
+                </div>
+                <div class="col-4">
+                    <label>Número de Série</label>
+                    <input type="text" class="form-control" placeholder="Entre com o Número de Série" v-model="item.NumeroSerie">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label>Código PM</label>
+                    <input type="text" class="form-control" placeholder="Entre com o Código PM" v-model="item.CodigoPM">
+                </div>
+                <div class="col-4">
+                    <label>Dados PM</label>
+                    <input type="text" class="form-control" placeholder="Entre com os Dados PM" v-model="item.DadosPM">
+                </div>
+                <div class="col-4">
+                    <label>Local PM</label>
+                    <input type="text" class="form-control" placeholder="Entre com o Local PM" v-model="item.LocalPM">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-12">
+                    <label>Observações</label>
+                    <textarea class="form-control" rows="3" v-model="item.Observacao"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">Campos Extras</div>
+                        <div class="card-body">
+                            <p>
+                                <button type="button" class="btn btn-primary" v-on:click="novoCampoExtra"><i class="fas fa-plus"></i>&nbsp;Novo Campo Extra</button>
+                            </p>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Valor</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(extra, index) in item.CamposExtras">
+                                        <td><input type="text" class="form-control" v-model="extra.Nome" required /></td>
+                                        <td><input type="text" class="form-control" v-model="extra.Valor" required /></td>
+                                        <td><button type="button" class="btn btn-danger btn-sm" v-on:click="excluirCampoExtra(index)" title="Excluir Campo Extra">&nbsp;<i class="fas fa-trash"></i></button>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">Galeria de Imagens</div>
+                        <div class="card-body">
+                            <p><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalImagem"><i class="fas fa-plus"></i>&nbsp;Nova Imagem</button></p>
+                            <hr />
+                            <div class="row">
+                                <div v-for="(img, index) in item.Imagens" class="col-2">
+                                    <div class="card" style="text-align: center;">
+                                        <div class="card-header">
+                                            <button type="button" class="btn btn-warning btn-sm" v-on:click="visualizarImagem(index)" title="Visualizar">&nbsp;<i class="fas fa-search"></i></button>
+                                            <button type="button" class="btn btn-danger btn-sm" v-on:click="removerImagem(index)" title="Excluir">&nbsp;<i class="fas fa-trash"></i></button>
+                                        </div>
+                                        <div class="card-body" style="min-height: 120px">
+                                            <img style="height: 70%; width: 100%; max-height: 110px;" v-bind:src="img" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">Localização do Item</div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-6">
+                                    <label>Latitude</label>
+                                    <input type="text" class="form-control" required v-model="item.Latitude" v-on:change="alterarPontoMapa" />
+                                </div>
+                                <div class="col-6">
+                                    <label>Longitude</label>
+                                    <input type="text" class="form-control" required v-model="item.Longitude" v-on:change="alterarPontoMapa" />
+                                </div>
+                            </div>
+                            <hr />
+                            <div id="map"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+                <button type="button" class="btn btn-danger" onclick="history.go(-1)">Voltar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalImagem">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastro de Imagem</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="modal-body" v-on:submit.prevent="incluirImagem">
+                    <img v-bind:src="imagem" style="height: 70%; border: 1px solid lightgray; " />
+                    <input type="file" id="uploadImagem" style="border: none;" v-on:change="lerImagem" required />
+                    <hr />
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalVisualizarImagem">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Visualização de Imagem</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="text-align:center;">
+                    <img v-bind:src="imagemVisualizacao" style="height: 70%;" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalPesquisaLocal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Pesquisa de Local</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <form class="col-12" v-on:submit.prevent="pesquisarLocais">
+                            <label>Filtro&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" v-model="filtro" required placeholder="Use esse campo para Filtrar os Locais">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="submit">Pesquisar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card" v-if="locais.length > 0">
+                        <div class="card-header">Locais encontrados</div>
+                        <div class="card-body">
+                            <div class="form-group row border-bottom pb-3" v-for="(local, index) in locais">
+                                <label class="col-sm-10">{{local.CaminhoPao}}</label>
+                                <div class="col-sm-2">
+                                    <button type="button" class="btn btn-sm btn-outline-info" v-on:click="selecionar(index)">Selecionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <script>
+        // Initialize and add the map
+        function initMap() {
+            // The location of Uluru
+            var uluru = { lat: -23.4965005, lng: -46.6234212 };
+            // The map, centered at Uluru
+            var map = new google.maps.Map(
+                document.getElementById('map'), { zoom: 18, center: uluru });
+            // The marker, positioned at Uluru
+            var marker = new google.maps.Marker({ position: uluru, map: map });
+        }
+
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFDYXQ7L0_wa4m9WY9HlDLa9Whewo0Zd8&callback=initMap">
+    </script>
+
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#item-form',
+            data() {
+                return {
+                    filiais: [],
+                    locais: [],
+                    responsaveis: [],
+                    estados: [],
+                    grupos: [],
+                    especies: [],
+                    propriedades: [],
+                    imagem: '',
+                    imagemVisualizacao: '',
+                    filialSelecionada: 0,
+                    item: {
+                        ID: 0,
+                        EmpresaID: localStorage.getItem('empresaID'),
+                        ItemEstadoID: 0,
+                        ResponsavelID: null,
+                        LocalID: 0,
+                        Local: {
+                            FilialID: 0
+                        },
+                        EspecieID: 0,
+                        Especie: {
+                            GrupoID: 0
+                        },
+                        Nome: '',
+                        Codigo: '',
+                        Incorporacao: 0,
+                        CodigoAnterior: '',
+                        IncorporacaoAnterior: 0,
+                        CodigoPM: '',
+                        DadosPM: '',
+                        LocalPM: '',
+                        Tag: '',
+                        Marca: '',
+                        Modelo: '',
+                        NumeroSerie: '',
+                        Observacao: '',
+                        ImagemURL: '',
+                        Latitude: -23.4965005,
+                        Longitude: -46.6234212,
+                        CamposExtras: [],
+                        PropriedadesValores: [],
+                        Imagens: []
+                    },
+                    errors: {},
+                    filtro: ''
+                };
+            },
+
+            methods: {
+
+                listarFiliais() {
+
+                    api.get('filial/getByEmpresaID/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: errors
+                                });
+                            }
+                            this.filiais = data;
+                            console.log(this.filiais);
+                        });
+                },
+
+                listarLocais() {
+
+                    api.get('local/GetAllByFilialID/' + this.item.Local.FilialID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: errors
+                                });
+                            }
+                            this.locais = data;
+
+                            this.locais = this.locais.filter(x => { return x.FilialID === this.item.Local.FilialID && x.CaminhoPao.toUpperCase().indexOf(this.filtro.toUpperCase()) >= 0 });
+
+                            if (this.item.ID > 0)
+                                this.item.Local = this.locais.filter(x => { return x.ID == this.item.LocalID })[0];
+                        });
+                },
+
+                listarResponsaveis() {
+
+                    api.get('responsavel/getByEmpresaID/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: errors
+                                });
+                            }
+                            this.responsaveis = data;
+                        });
+                },
+
+                listarEstados() {
+
+                    api.get('itemEstado/getAll', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: errors
+                                });
+                            }
+                            this.estados = data;
+                        });
+                },
+
+                listarGrupos() {
+
+                    api.get('grupo/getByEmpresaID/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: errors
+                                });
+                            }
+                            this.grupos = data;
+                        });
+                },
+
+                listarEspecies() {
+
+                    api.get('especie/getByGrupoID/' + this.item.Especie.GrupoID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: errors
+                                });
+                            }
+                            this.especies = data;
+                        });
+                },
+
+                listarPropriedades() {
+
+
+                    api.get('especiePropriedade/getByEspecieID/' + this.item.EspecieID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: errors
+                                });
+                            }
+                            this.propriedades = data;
+
+                            for (var i = 0; i < data.length; i++) {
+                                this.item.PropriedadesValores.push({ PropriedadeID: data[i].PropriedadeID, Valor: 0, PropriedadeValorID: '' });
+                            }
+
+                            this.item.Nome = this.especies.filter(x => { return x.ID == this.item.EspecieID })[0].Nome;
+                        });
+                },
+
+                alterarPontoMapa() {
+
+                    var localizacao = { lat: parseFloat(this.item.Latitude), lng: parseFloat(this.item.Longitude) };
+
+                    var map = new google.maps.Map(
+                        document.getElementById('map'), { zoom: 18, center: localizacao });
+
+                    var marker = new google.maps.Marker({ position: localizacao, map: map });
+                },
+
+                novoCampoExtra() {
+
+                    this.item.CamposExtras.push({ ID: 0, Nome: '', Valor: 0 });
+                },
+
+                excluirCampoExtra(index) {
+
+                    this.item.CamposExtras.splice(index, 1);
+                },
+
+                lerImagem() {
+
+                    let self = this;
+
+                    if (document.getElementById('uploadImagem').files && document.getElementById('uploadImagem').files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+
+                            self.imagem = e.target.result;
+                        };
+                        reader.readAsDataURL(document.getElementById('uploadImagem').files[0]);
+                    }
+                    else {
+                        var img = document.getElementById('uploadImagem').value;
+                        self.imagem = document.getElementById('uploadImagem').value;
+                    }
+                },
+
+                incluirImagem() {
+
+                    let self = this;
+
+                    if (self.imagem.length > 0) {
+
+                        if (this.item.ID > 0) {
+
+                            axios.request({
+                                url: config.baseURL + 'itemImagem/' + self.item.ID,
+                                method: 'POST',
+                                headers: {
+                                    "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                },
+                                data: ({ Conteudo: self.imagem })
+                            }).then(function () {
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Parabéns',
+                                    text: 'Imagem adicionada com sucesso ao Item',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    onClose: () => {
+
+                                        self.item.Imagens.push(self.imagem);
+                                        self.imagem = '';
+                                        document.getElementById('uploadImagem').value = '';
+                                        $('#modalImagem').modal('hide');
+
+                                    }
+                                });
+                            }).catch(function (erro) {
+
+                                return Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: erro.response.data.Message
+                                });
+                            });
+                        }
+                        else {
+
+                            this.item.Imagens.push(this.imagem);
+                            this.imagem = '';
+                            document.getElementById('uploadImagem').value = '';
+                            $('#modalImagem').modal('hide');
+                        }
+                    }
+                },
+
+                removerImagem(index) {
+
+                    let self = this;
+
+                    if (this.item.ID > 0) {
+
+                        Swal.fire({
+                            title: 'Deseja realmente excluir essa Imagem?',
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Sim, Pode excluir.'
+                        }).then((result) => {
+                            if (result.value) {
+
+                                axios.request({
+                                    url: config.baseURL + 'itemImagem/' + self.item.ID + '?imagem=' + self.item.Imagens[index].split('/')[self.item.Imagens[index].split('/').length - 1],
+                                    method: 'delete',
+                                    headers: {
+                                        "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                    }
+                                }).then(function () {
+
+                                    Swal.fire({
+                                        type: 'success',
+                                        title: 'Parabéns',
+                                        text: 'Imagem excluída com sucesso',
+                                        showConfirmButton: false,
+                                        timer: 2000,
+                                        onClose: () => {
+
+                                            self.item.Imagens.splice(index, 1);
+                                        }
+                                    });
+
+                                }).catch(function (erro) {
+
+                                    Swal.fire({
+                                        type: 'error',
+                                        title: 'Erro',
+                                        text: erro.response.data.Message
+                                    });
+                                });
+                            }
+                        });
+                    }
+                    else
+                        self.item.Imagens.splice(index, 1);
+                },
+
+                visualizarImagem(index) {
+
+                    this.imagemVisualizacao = this.item.Imagens[index];
+
+                    $('#modalVisualizarImagem').modal('show');
+                },
+
+                salvar() {
+
+                    const { item } = this;
+
+                    let urlReq = config.baseURL + 'item';
+
+                    let metodo = 'post';
+
+                    if (item.ID) {
+                        urlReq = urlReq + '/' + item.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (item)
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Item salvo com sucesso',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/item';
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editar(id) {
+
+                    api.get('item/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.item = data;
+
+                            if (this.item.Local.FilialID > 0)
+                                this.listarLocais();
+
+                            if (this.item.Especie.GrupoID > 0)
+                                this.listarEspecies();
+
+                            if (this.item.EspecieID > 0)
+                                this.listarPropriedades();
+
+                            this.alterarPontoMapa();
+                        });
+                },
+
+                verificaSeExiste() {
+
+                    api.aguarde();
+
+                    api.get('item/verifyifexists/' + this.item.EmpresaID + '/' + this.item.Local.FilialID + '/' + this.item.Codigo + '/' + this.item.Incorporacao, true)
+                        .then(({ data, errors }) => {
+
+                            api.fecharAguarde();
+
+                            this.errors = errors || {};
+
+                            if (errors) {
+                                return;
+                            }
+
+                            if (data) {
+
+                                api.mensagem('Código já utilizado. Não é possível utilizá-lo nesse item.');
+                                $('#txtCodigo').val('');
+                            }
+
+
+                        });
+                },
+
+                pesquisarLocais() {
+
+                    this.listarLocais();
+                },
+
+                selecionar(index) {
+
+                    let localSelecionado = this.locais[index];
+
+                    this.item.Local = localSelecionado;
+                    this.item.LocalID = localSelecionado.ID;
+
+                    this.filtro = '';
+                    this.locais = [];
+
+                    $('#modalPesquisaLocal').modal('hide');
+                }
+            },
+
+            created: function () {
+
+                const id = this.getId();
+
+                if (id) {
+                    this.editar(id);
+                }
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/item', true)
+                    .then(({ data, errors }) => {
+                        self.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if ((id && data.indexOf('PUT') < 0) || !id && data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                        else {
+
+                            self.listarFiliais();
+                            self.listarResponsaveis();
+                            self.listarEstados();
+                            self.listarGrupos();
+                        }
+
+                    });
+            }
+        });
+
+    </script>
+}

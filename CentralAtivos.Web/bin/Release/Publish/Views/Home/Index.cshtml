@@ -1,0 +1,93 @@
+﻿<div class="kt-portlet kt-portlet--mobile" id="dashboard">
+    <div class="kt-portlet__head kt-portlet__head--lg">
+        <div class="kt-portlet__head-label">
+            <span class="kt-portlet__head-icon">
+                <i class="kt-font-brand flaticon2-line-chart"></i>
+            </span>
+            <h3 class="kt-portlet__head-title">
+                Dashboard
+            </h3>
+        </div>
+    </div>
+    <div class="kt-portlet__body">
+        <div class="row justify-content-around">
+            <img src="~/Content/img/chart1.png" />
+            <img src="~/Content/img/chart2.png" />
+        </div>
+        <div class="row justify-content-around mt-5">
+            <div class="card" style="width:80%;">
+                <div class="card-header">Inventários em Andamento</div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Nome</th>
+                                <th>Filial</th>
+                                <th>Qtde Locais</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Inventário 1</td>
+                                <td>Filial 1</td>
+                                <td>25</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Inventário 2</td>
+                                <td>Filial 1</td>
+                                <td>23</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Inventário 3</td>
+                                <td>Filial 2</td>
+                                <td>57</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#dashboard',
+            data() {
+                return {
+                    usuario: {},
+                    errors: {}
+                };
+            },
+
+            methods: {
+
+                getUsuario() {
+
+                    api.get('helpers/getUsuarioLogado', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.usuario = data;
+                        });
+
+                }
+
+            },
+            mounted() {
+
+                this.getUsuario();
+            }
+        });
+
+    </script>
+}

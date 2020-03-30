@@ -1,0 +1,173 @@
+﻿<div class="kt-portlet">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Perfis
+            </h3>
+        </div>
+    </div>
+
+    <!--begin::Form-->
+    <form class="kt-form" id="perfil-form" v-on:submit.prevent="salvar">
+        <div class="kt-portlet__body">
+            <div class="form-group row">
+                <div class="col-12">
+                    <label>Nome&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                    <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Entre com o Nome do Perfil" required v-model="perfil.Nome">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-12">
+                    <button type="button" class="btn btn-success" v-on:click="perfil.CopiarPerfil = false" v-if="perfil.CopiarPerfil"><i class="fas fa-check"></i>&nbsp;Pronto! Agora selecione de qual Perfil você quer copiar as Permissões</button>
+                    <button type="button" class="btn btn-secondary" v-on:click="perfil.CopiarPerfil = true" v-else>Clique aqui para Copiar as Permissões de outro Perfil</button>
+                </div>
+            </div>
+            <div class="form-group row" v-if="perfil.CopiarPerfil">
+                <div class="col-12">
+                    <label>Perfil à ser Copiado&nbsp;<small class="invalid-feedback">(Obrigatório)</small></label>
+                    <select class="form-control" v-model="perfil.PerfilCopiaID">
+                        <option value="">- Selecione um Perfil -</option>
+                        <option v-bind:value="perfilCopia.ID" v-for="perfilCopia in perfisCopia">{{perfilCopia.Nome}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+                <button type="button" class="btn btn-danger" onclick="history.go(-1)">Voltar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#perfil-form',
+            data() {
+                return {
+                    perfil: {
+                        ID: 0,
+                        Nome: '',
+                        CopiarPerfil: false,
+                        PerfilCopiaID: ''
+                    },
+                    perfisCopia: [],
+                    errors: {}
+                };
+            },
+
+            methods: {
+
+                listarPerfisCopia() {
+
+                    api.get('perfil/getPerfis', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.perfisCopia = data;
+                        });
+                },
+
+                salvar() {
+
+                    const { perfil } = this;
+
+                    let urlReq = config.baseURL + 'perfil';
+
+                    let metodo = 'post';
+
+                    if (perfil.ID) {
+                        urlReq = urlReq + '/' + perfil.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (perfil)
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Perfil salvo com sucesso',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/perfil';
+                            }
+                        });
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editar(id) {
+
+                    api.get('perfil/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.perfil = data;
+                        });
+                }
+            },
+
+            created: function () {
+
+                const id = this.getId();
+
+                if (id) {
+                    this.editar(id);
+                }
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/perfil', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if ((id && data.indexOf('PUT') < 0) || !id && data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                        else
+                            self.listarPerfisCopia();
+                    });
+
+            }
+        });
+
+    </script>
+}

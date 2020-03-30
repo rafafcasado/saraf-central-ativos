@@ -1,0 +1,220 @@
+﻿<div class="kt-portlet">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Usuários
+            </h3>
+        </div>
+    </div>
+    <form class="kt-form" id="usuario-form" v-on:submit.prevent="salvar" novalidate>
+        <div class="kt-portlet__body">
+            <div class="form-group row">
+                <div class="col">
+                    <label>Nome</label>
+                    <input type="text" class="form-control" name="nome" autocomplete="off" placeholder="Entre com o Nome do Usuário" required v-model="usuario.Nome">
+                    <div class="error invalid-feedback" v-if="erro('email', 'required')">Email obrigatório</div>
+                </div>
+                <div class="col">
+                    <label>Email</label>
+                    <input type="email" class="form-control" name="email" placeholder="Entre com o Email do Usuário" required v-model="usuario.Email" autocomplete="off">
+                    <div class="error invalid-feedback">Obrigatório</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col">
+                    <label for="PerfilID">Perfil</label>
+                    <select class="form-control kt-select2" name="perfil" required v-model="usuario.PerfilID" v-on:change="usuario.EmpresaID = null">
+                        <option value="null" disabled selected>Selecione um Perfil</option>
+                        <option v-for="perfil in perfis" v-bind:value="perfil.ID">{{perfil.Nome}}</option>
+                    </select>
+                    <div class="error invalid-feedback">Obrigatório</div>
+                </div>
+                <div class="col">
+                    <label for="EmpresaID">Empresa</label>
+                    <select class="form-control kt-select2" name="empresa" v-model="usuario.EmpresaID" v-bind:disabled="usuario.PerfilID <= 1">
+                        <option value="null" disabled selected>- Usuário não vinculado à uma Empresa -</option>
+                        <option v-for="empresa in empresas" v-bind:value="empresa.ID">{{empresa.NomeFantasia}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn-success" v-on:click="usuario.NotificarUsuario = false" v-if="usuario.NotificarUsuario"><i class="fas fa-check"></i>&nbsp;O Usuário receberá aviso do cadastro por e-mail</button>
+                <button type="button" class="btn btn-secondary" v-on:click="usuario.NotificarUsuario = true" v-else>Selecione aqui para enviar Email de Primeiro Acesso para o Usuário</button>
+            </div>
+        </div>
+        <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+                <button type="button" class="btn btn-danger" onclick="history.go(-1)">Voltar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        const { required, email, minLength } = window.validators;
+
+        new Vue({
+            el: '#usuario-form',
+            data() {
+                return {
+                    usuario: {
+                        ID: 0,
+                        Nome: '',
+                        Email: '',
+                        PerfilID: null,
+                        EmpresaID: null,
+                        NotificarUsuario: false
+                    },
+                    perfis: {},
+                    empresas: {},
+                    errors: {}
+                };
+            },
+
+            validations: {
+                email: {
+                    required,
+                    email
+                },
+                nome: {
+                    required,
+                    minLength: minLength(1)
+                },
+                perfil: {
+                    required
+                }
+            },
+
+            methods: {
+
+                listarPerfis() {
+
+                    api.get('perfil/getPerfis', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.perfis = data;
+                        });
+
+                },
+
+                listarEmpresas() {
+
+                    api.get('empresa/getEmpresas', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.empresas = data;
+                        });
+
+                },
+
+                salvar() {
+
+                    const { usuario } = this;
+
+                    let urlReq = config.baseURL + 'usuario';
+
+                    let metodo = 'post';
+
+                    if (usuario.ID) {
+                        urlReq = urlReq + '/' + usuario.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (usuario)
+                    }).then(function (data) {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Usuário salvo com sucesso',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/usuario';
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editar(id) {
+
+                    api.get('usuario/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.usuario = data;
+                        });
+                }
+            },
+
+            created: function () {
+
+                const id = this.getId();
+
+                if (id) {
+                    this.editar(id);
+                }
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/usuario', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if ((id && data.indexOf('PUT') < 0) || !id && data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                        else {
+
+                            self.listarPerfis();
+                            self.listarEmpresas();
+                        }
+
+                    });
+
+            }
+        });
+
+    </script>
+}

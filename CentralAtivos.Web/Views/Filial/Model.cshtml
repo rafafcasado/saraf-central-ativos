@@ -1,0 +1,267 @@
+﻿<div class="kt-portlet">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <span class="kt-portlet__head-icon">
+                <i class="kt-font-brand fa fa-building"></i>
+            </span>
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Filial
+            </h3>
+        </div>
+    </div>
+
+    <!--begin::Form-->
+    <form class="kt-form" id="filial-form" v-on:submit.prevent="salvar">
+        <div class="kt-portlet__body">
+            <div class="card">
+                <div class="card-header">
+                    Dados Principais
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-md-4 col-sm-12">
+                            <label>Código <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Código da Filial" required v-model="filial.Codigo">
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <label>Nome <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Nome da Filial" required v-model="filial.Nome">
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <label>CNPJ <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input name="cnpj" type="text" class="form-control" placeholder="Entre com o CNPJ" required v-model="filial.CNPJ" v-mask="'##.###.###/####-##'" v-on:blur="verificaCNPJ">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="card">
+                <div class="card-header">
+                    Endereço
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-md-4 col-sm-12">
+                            <label>CEP <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o CEP" required v-model="filial.CEP" v-mask="'#####-###'" v-on:blur="buscarCEP">
+                        </div>
+                        <div class="col-md-10 col-sm-12">
+                            <label>Endereço <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Endereço" required v-model="filial.Endereco">
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label>Número</label>
+                            <input type="number" class="form-control" placeholder="Número" v-model="filial.Numero">
+                        </div>
+                        <div class="col-md-3 col-sm-12">
+                            <label>Complemento</label>
+                            <input type="text" class="form-control" placeholder="Entre com o Complemento" v-model="filial.Complemento">
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <label>Bairro <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Bairro" v-model="filial.Bairro">
+                        </div>
+                        <div class="col-md-3 col-sm-12">
+                            <label>Cidade <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com a Cidade" v-model="filial.Cidade">
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label>UF <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <select class="form-control" v-model="filial.UF">
+                                <option value="AC">AC</option>
+                                <option value="AL">AL</option>
+                                <option value="AP">AP</option>
+                                <option value="AM">AM</option>
+                                <option value="BA">BA</option>
+                                <option value="CE">CE</option>
+                                <option value="DF">DF</option>
+                                <option value="ES">ES</option>
+                                <option value="GO">GO</option>
+                                <option value="MA">MA</option>
+                                <option value="MT">MT</option>
+                                <option value="MS">MS</option>
+                                <option value="MG">MG</option>
+                                <option value="PA">PA</option>
+                                <option value="PB">PB</option>
+                                <option value="PR">PR</option>
+                                <option value="PE">PE</option>
+                                <option value="PI">PI</option>
+                                <option value="RJ">RJ</option>
+                                <option value="RN">RN</option>
+                                <option value="RS">RS</option>
+                                <option value="RO">RO</option>
+                                <option value="RR">RR</option>
+                                <option value="SC">SC</option>
+                                <option value="SP">SP</option>
+                                <option value="SE">SE</option>
+                                <option value="TO">TO</option>
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+                <button type="button" class="btn btn-danger" onclick="history.go(-1)">Voltar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#filial-form',
+            data() {
+                return {
+                    filial: {
+                        ID: 0,
+                        EmpresaID: localStorage.getItem('empresaID'),
+                        Codigo: '',
+                        Nome: '',
+                        CNPJ: '',
+                        CEP: '',
+                        Endereco: '',
+                        Numero: '',
+                        Complemento: '',
+                        Bairro: '',
+                        Cidade: '',
+                        UF: 'AC'
+                    },
+                    errors: {}
+                };
+            },
+
+            methods: {
+
+                salvar() {
+
+                    const { filial } = this;
+
+                    let urlReq = config.baseURL + 'filial';
+
+                    let metodo = 'post';
+
+                    if (filial.ID) {
+                        urlReq = urlReq + '/' + filial.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (filial)
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Filial salva com sucesso',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/filial';
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editar(id) {
+
+                    api.get('filial/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.filial = data;
+                        });
+                },
+
+                buscarCEP() {
+
+                    const self = this;
+
+                    axios.request({
+                        url: 'https://viacep.com.br/ws/' + self.filial.CEP.replace('-', '') + '/json/',
+                        method: 'get'
+                    }).then(function (resp) {
+                        if (resp.data) {
+
+                            self.filial.Endereco = resp.data.logradouro;
+                            self.filial.Bairro = resp.data.bairro;
+                            self.filial.Cidade = resp.data.localidade;
+                            self.filial.UF = resp.data.uf;
+                        }
+                    });
+
+                },
+
+                verificaCNPJ() {
+
+                    if (this.filial.CNPJ.length > 0 && !this.validaCNPJ(this.filial.CNPJ)) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: 'CNPJ Inválido. Favor Verificar',
+                            onClose: () => {
+
+                                $('input[name=cnpj]').focus();
+                            }
+                        });
+                    }
+                }
+            },
+
+            created: function () {
+                const id = this.getId();
+
+                if (id) {
+                    this.editar(id);
+                }
+
+                api.get('permissao/getByFuncionalidade/filial', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if ((id && data.indexOf('PUT') < 0) || !id && data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+
+                    });
+            }
+        });
+
+    </script>
+}

@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{23C55975-56EB-413E-A10C-8963DFA2605A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CentralAtivos.Repository</RootNamespace>
+    <AssemblyName>CentralAtivos.Repository</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Context\Context.cs" />
+    <Compile Include="Migrations\201909261233508_Inicial.cs" />
+    <Compile Include="Migrations\201909261233508_Inicial.Designer.cs">
+      <DependentUpon>201909261233508_Inicial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909262207389_ConfiguracaoInventario.cs" />
+    <Compile Include="Migrations\201909262207389_ConfiguracaoInventario.Designer.cs">
+      <DependentUpon>201909262207389_ConfiguracaoInventario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909262254033_InventarioMascaraNaoObrigatorio.cs" />
+    <Compile Include="Migrations\201909262254033_InventarioMascaraNaoObrigatorio.Designer.cs">
+      <DependentUpon>201909262254033_InventarioMascaraNaoObrigatorio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909272146498_StatusItem.cs" />
+    <Compile Include="Migrations\201909272146498_StatusItem.Designer.cs">
+      <DependentUpon>201909272146498_StatusItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909281200203_Coletor.cs" />
+    <Compile Include="Migrations\201909281200203_Coletor.Designer.cs">
+      <DependentUpon>201909281200203_Coletor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909281345373_Placas.cs" />
+    <Compile Include="Migrations\201909281345373_Placas.Designer.cs">
+      <DependentUpon>201909281345373_Placas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909281349297_InventarioItem.cs" />
+    <Compile Include="Migrations\201909281349297_InventarioItem.Designer.cs">
+      <DependentUpon>201909281349297_InventarioItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909281424063_TamanhoNumeroPlaca.cs" />
+    <Compile Include="Migrations\201909281424063_TamanhoNumeroPlaca.Designer.cs">
+      <DependentUpon>201909281424063_TamanhoNumeroPlaca.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910012051233_NumeroSerieColetor.cs" />
+    <Compile Include="Migrations\201910012051233_NumeroSerieColetor.Designer.cs">
+      <DependentUpon>201910012051233_NumeroSerieColetor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912141811058_UploadRegra.cs" />
+    <Compile Include="Migrations\201912141811058_UploadRegra.Designer.cs">
+      <DependentUpon>201912141811058_UploadRegra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002072310008_EmpresaPermiteCodigosIguais.cs" />
+    <Compile Include="Migrations\202002072310008_EmpresaPermiteCodigosIguais.Designer.cs">
+      <DependentUpon>202002072310008_EmpresaPermiteCodigosIguais.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\ContaContabilRepository.cs" />
+    <Compile Include="Repositories\CentroCustoRepository.cs" />
+    <Compile Include="Repositories\EntidadeCampoRepository.cs" />
+    <Compile Include="Repositories\EspeciePropriedadeRepository.cs" />
+    <Compile Include="Repositories\InventarioFilialRepository.cs" />
+    <Compile Include="Repositories\InventarioConfigRepository.cs" />
+    <Compile Include="Repositories\InventarioUsuarioRepository.cs" />
+    <Compile Include="Repositories\InventarioLocalRepository.cs" />
+    <Compile Include="Repositories\InventarioRepository.cs" />
+    <Compile Include="Repositories\ItemEstadoRepository.cs" />
+    <Compile Include="Repositories\ItemRepository.cs" />
+    <Compile Include="Repositories\OrdemServicoMotivoCampoRepository.cs" />
+    <Compile Include="Repositories\OrdemServicoMotivoRepository.cs" />
+    <Compile Include="Repositories\OrdemServicoCampoRepository.cs" />
+    <Compile Include="Repositories\OrdemServicoMotivoCampoValorRepository.cs" />
+    <Compile Include="Repositories\OrdemServicoAnexoRepository.cs" />
+    <Compile Include="Repositories\OrdemServicoItemRepository.cs" />
+    <Compile Include="Repositories\OrdemServicoRepository.cs" />
+    <Compile Include="Repositories\PerfilMenuRepository .cs" />
+    <Compile Include="Repositories\MenuRepository.cs" />
+    <Compile Include="Repositories\FuncionalidadeRepository.cs" />
+    <Compile Include="Repositories\ColetorRepository.cs" />
+    <Compile Include="Repositories\PlacaGrupoRepository.cs" />
+    <Compile Include="Repositories\PlacaRepository.cs" />
+    <Compile Include="Repositories\SincronizacaoRepository.cs" />
+    <Compile Include="Repositories\UploadRepository.cs" />
+    <Compile Include="Repositories\ResponsavelRepository.cs" />
+    <Compile Include="Repositories\PropriedadeValorRepository.cs" />
+    <Compile Include="Repositories\PropriedadeRepository.cs" />
+    <Compile Include="Repositories\EspecieRepository.cs" />
+    <Compile Include="Repositories\GrupoRepository.cs" />
+    <Compile Include="Repositories\RequisicaoRepository.cs" />
+    <Compile Include="Repositories\LocalRepository.cs" />
+    <Compile Include="Repositories\FilialRepository.cs" />
+    <Compile Include="Repositories\PerfilRepository.cs" />
+    <Compile Include="Repositories\LogUsuarioRepository.cs" />
+    <Compile Include="Repositories\PermissaoRepository.cs" />
+    <Compile Include="Repositories\EmpresaRepository.cs" />
+    <Compile Include="Repositories\UsuarioRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CentralAtivos.Domain\CentralAtivos.Domain.csproj">
+      <Project>{794ea289-d539-4025-bc71-c1b17da1ddd9}</Project>
+      <Name>CentralAtivos.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CentralAtivos.Helpers\CentralAtivos.Helpers.csproj">
+      <Project>{9423526b-8c16-4f8d-9e5c-807d5fd078f1}</Project>
+      <Name>CentralAtivos.Helpers</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201909261233508_Inicial.resx">
+      <DependentUpon>201909261233508_Inicial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909262207389_ConfiguracaoInventario.resx">
+      <DependentUpon>201909262207389_ConfiguracaoInventario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909262254033_InventarioMascaraNaoObrigatorio.resx">
+      <DependentUpon>201909262254033_InventarioMascaraNaoObrigatorio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909272146498_StatusItem.resx">
+      <DependentUpon>201909272146498_StatusItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909281200203_Coletor.resx">
+      <DependentUpon>201909281200203_Coletor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909281345373_Placas.resx">
+      <DependentUpon>201909281345373_Placas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909281349297_InventarioItem.resx">
+      <DependentUpon>201909281349297_InventarioItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909281424063_TamanhoNumeroPlaca.resx">
+      <DependentUpon>201909281424063_TamanhoNumeroPlaca.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910012051233_NumeroSerieColetor.resx">
+      <DependentUpon>201910012051233_NumeroSerieColetor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912141811058_UploadRegra.resx">
+      <DependentUpon>201912141811058_UploadRegra.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002072310008_EmpresaPermiteCodigosIguais.resx">
+      <DependentUpon>202002072310008_EmpresaPermiteCodigosIguais.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,1035 @@
+﻿
+<div id="grupos-form">
+    <div class="kt-content  kt-grid__item kt-grid__item--fluid" id="kt_content">
+        <div class="kt-portlet kt-portlet--mobile">
+            <div class="kt-portlet__head kt-portlet__head--lg">
+                <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">
+                        Cadastro de Grupos > Espécies > Propriedades
+                    </h3>
+                </div>
+                <div class="kt-portlet__head-toolbar">
+                    <div class="kt-portlet__head-wrapper">
+                        <div class="kt-portlet__head-actions">
+                            <button class="btn btn-success btn-brand btn-elevate btn-icon-sm" data-toggle="modal" data-target="#modalUpload" v-if="permissaoGrupo.indexOf('POST') >= 0">
+                                <i class="la la-upload"></i> Upload de Grupos
+                            </button>
+                            <button class="btn btn-success btn-brand btn-elevate btn-icon-sm" data-toggle="modal" data-target="#modalUploadEspecie" v-if="permissaoEspecie.indexOf('POST') >= 0">
+                                <i class="la la-upload"></i> Upload de Espécies
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="kt-portlet__body">
+
+                <!--begin: Datatable -->
+                <div id="kt_table_1_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                    <div class="alert alert-info" v-if="grupos.length === undefined || grupos.length === 0">Não há nenhum Grupo Cadastrado</div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <button data-toggle="modal" data-target="#modalCadastroGrupo" class="btn btn-secondary btn-sm" v-if="permissaoGrupo.indexOf('POST') >= 0">Novo Grupo</button>
+                            <hr />
+                            <div id="accordion-grupo">
+                                <div class="card" v-for="(grupo, index) in grupos">
+                                    <div class="card-header" id="heading-1">
+                                        <div class="row justify-content-around">
+                                            <div class="col-8">
+                                                <h5 class="mb-0">
+                                                    <a role="button text-brand" data-toggle="collapse" v-bind:href="'#collapse-grupo-'+index" aria-expanded="true" aria-controls="collapse-1" v-on:click="listarEspecies(grupo.ID)">
+                                                        {{grupo.Codigo}}&nbsp;{{grupo.Nome}}
+                                                    </a>
+                                                </h5>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="float-right">
+                                                    <button class="btn btn-outline-warning btn-sm" v-on:click="editar(grupo.ID)" title="Editar" v-if="permissaoGrupo.indexOf('PUT') >= 0">&nbsp;&nbsp;<i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-outline-danger btn-sm" v-on:click="excluir(grupo.ID)" title="Excluir" v-if="permissaoGrupo.indexOf('DELETE') >= 0">&nbsp;&nbsp;<i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-bind:id="'collapse-grupo-'+index" class="collapse" data-parent="#accordion-grupo" aria-labelledby="heading-1">
+                                        <div class="card-body">
+                                            <button class="btn btn-secondary btn-sm" v-on:click="setGrupoEspecie(grupo.ID)" v-if="permissaoEspecie.indexOf('POST') >= 0">Nova Espécie</button>
+                                            <hr />
+                                            <div id="accordion-especie">
+                                                <div class="card" v-for="(especie, index) in especies">
+                                                    <div class="card-header" id="heading-2-1">
+                                                        <div class="row justify-content-around">
+                                                            <div class="col-8">
+                                                                <h5 class="mb-0">
+                                                                    <a class="collapsed text-primary" role="button" data-toggle="collapse" v-bind:href="'#collapse-especie-'+index" aria-expanded="false" aria-controls="collapse-1-1" v-on:click="listarEspeciePropriedades(especie.ID)">
+                                                                        {{especie.Codigo}}&nbsp;{{especie.Nome}}
+                                                                    </a>
+                                                                </h5>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <div class="float-right">
+                                                                    <button class="btn btn-outline-warning btn-sm" v-on:click="editarEspecie(especie.ID)" title="Editar" v-if="permissaoEspecie.indexOf('PUT') >= 0">&nbsp;&nbsp;<i class="fas fa-edit"></i></button>
+                                                                    <button class="btn btn-outline-danger btn-sm" v-on:click="excluirEspecie(index)" title="Excluir" v-if="permissaoEspecie.indexOf('DELETE') >= 0">&nbsp;&nbsp;<i class="fas fa-trash"></i></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div v-bind:id="'collapse-especie-'+index" class="collapse" data-parent="#accordion-especie" aria-labelledby="heading-1-1">
+                                                        <div class="card-body">
+                                                            <button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#modalCadastroPropriedade" v-on:click="especieSelecionada = especie.ID" v-if="permissaoEspecie.indexOf('PUT') >= 0">Nova Propriedade</button>
+                                                            <hr />
+                                                            <div id="accordion-propriedade">
+                                                                <div v-for="(especiePropriedade, index) in especiePropriedades">
+                                                                    <div class="row">
+                                                                        <div class="col-8 pl-5">{{especiePropriedade.Propriedade.Nome}}</div>
+                                                                        <div class="col-4">
+                                                                            <div class="float-right">
+                                                                                <button class="btn btn-outline-danger btn-sm" v-on:click="excluirEspeciePropriedade(index)" title="Excluir" v-if="permissaoEspecie.indexOf('PUT') >= 0">&nbsp;&nbsp;<i class="fas fa-trash"></i></button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <hr />
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end: Datatable -->
+                </div>
+            </div>
+        </div>
+
+        <!--end::Portlet-->
+        <!--end::Portlet-->
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalCadastroGrupo">
+        <div class="modal-dialog modal-lg" role="document">
+            <form class="modal-content" v-on:submit.prevent="salvarGrupo">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastro de Grupos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col-md-4 col-sm-12">
+                            <label>Código <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Código do Grupo" required v-model="grupo.Codigo">
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <label>Nome <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Nome do Grupo" required v-model="grupo.Nome">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-12 col-sm-12">
+                            <label>Conta Contábil</label>
+                            <select class="form-control" v-model="grupo.ContaContabilID">
+                                <option value="null">- Conta Contábil não Atribuída -</option>
+                                <option v-bind:value="conta.ID" v-for="conta in contasContabeis">{{conta.CaminhoPao}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalCadastroEspecie">
+        <div class="modal-dialog modal-lg" role="document">
+            <form class="modal-content" v-on:submit.prevent="salvarEspecie">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastro de Espécies</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col-md-4 col-sm-12">
+                            <label>Código <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Código da Espécie" required v-model="especie.Codigo">
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <label>Nome <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Nome da Espécie" required v-model="especie.Nome">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalCadastroPropriedade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="kt-portlet__body">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#tabPesquisa"><i class="fas fa-search"></i> Pesquisa de Propriedades</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tabCadastro"><i class="la la-plus fa-lg"></i> Adicionar Propriedade</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tabPesquisa">
+                                <form v-on:submit.prevent="vincularEspeciePropriedades">
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-lg-12  col-sm-12">Selecione as Propriedades</label>
+                                        <div class=" col-lg-12 col-md-12 col-sm-12">
+                                            <select class="form-control kt-select2 select2-hidden-accessible" id="kt_select2_3" name="param" multiple="" style="width: 100% !important;" data-select2-id="kt_select2_3" tabindex="-1" aria-hidden="true" required>
+                                                <optgroup label="Propriedades">
+                                                    <option v-for="p in propriedades" v-bind:value="p.ID">{{p.Nome}}</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <p>
+                                        <button type="submit" class="btn btn-success btn-block">Salvar</button>
+                                    </p>
+                                </form>
+                            </div>
+                            <div class="tab-pane" id="tabCadastro">
+                                <form v-on:submit.prevent="salvarPropriedade">
+                                    <div class="row">
+                                        <button type="button" class="btn btn-success" v-on:click="propriedade.VincularEspecies = false" v-if="propriedade.VincularEspecies"><i class="fas fa-check"></i>&nbsp;Essa Propriedade será vinculada à todas as Espécies Ativas</button>
+                                        <button type="button" class="btn btn-secondary" v-on:click="propriedade.VincularEspecies = true" v-else>Selecione aqui para vincular essa Propriedade à todas as Espécies Ativas</button>
+                                    </div>
+                                    <br /><br />
+                                    <div class="row form-group">
+                                        <div class="col-sm-12 col-md-4">
+                                            <label>Código</label>
+                                            <input type="text" placeholder="Código da Propriedade" class="form-control" v-model="propriedade.Codigo" required>
+                                        </div>
+                                        <div class="col-sm-12 col-md-4">
+                                            <label>Nome</label>
+                                            <input type="text" placeholder="Nome da Propriedade" class="form-control" v-model="propriedade.Nome" required>
+                                        </div>
+                                        <div class="col-sm-12 col-md-4 pt-5">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" v-model="propriedade.Fixa" v-on:click="setValores">
+                                                <label class="form-check-label">Valores Fixos?</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <fieldset v-if="propriedade.Fixa">
+                                        <legend>Valores</legend>
+                                        <div class="row form-group" v-for="(v, index) in propriedade.Valores">
+                                            <div class="col-10">
+                                                <input type="text" placeholder="Valor" class="form-control" required v-model="v.Valor">
+                                            </div>
+                                            <div class="col-2">
+                                                <button type="button" class="btn btn-block btn-danger" v-on:click="removeValor(index)" title="Excluir"><i class="la la-trash fa-lg"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-2">
+                                                <button type="button" class="btn btn-block btn-primary" v-on:click="propriedade.Valores.push({Valor:''})" title="Novo Valor"><i class="la la-plus fa-lg"></i></button>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                    <hr />
+                                    <p>
+                                        <button type="submit" class="btn btn-success btn-block">Salvar</button>
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalUpload">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload de Arquivos - Grupos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="modal-body" v-on:submit.prevent="upload">
+                    <h5>1. Baixe o Modelo</h5>
+                    <p><a href="~/uploads/modelos/modelo-grupos.csv">Clique aqui para baixar o arquivo modelo</a></p>
+                    <hr />
+                    <br />
+                    <h5>2. Preecha os dados</h5>
+                    <br />
+                    <hr />
+                    <br />
+                    <h5>3. Faça o Upload do Arquivo</h5>
+                    <br />
+                    <p><input type="file" required id="file" ref="file" /></p>
+                    <br />
+                    <hr />
+                    <h5>4. Selecione uma Regra de Upload</h5>
+                    <br />
+                    <p>
+                        <select class="form-control" id="regraUpload">
+                            <option value="1">1. Atualizar: Atualiza os registros atuais e inclui novos</option>
+                            <option value="2">2. Incluir: Apenas inclui novos</option>
+                            <option value="3">3. Limpar: Limpa a base antiga e cria uma nova</option>
+                        </select>
+                    </p>
+                    <br />
+                    <hr />
+                    <button class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalUploadEspecie">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload de Arquivos - Espécies</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="modal-body" v-on:submit.prevent="uploadEspecie">
+                    <h5>1. Baixe o Modelo</h5>
+                    <p><a href="~/uploads/modelos/modelo-especies.csv">Clique aqui para baixar o arquivo modelo</a></p>
+                    <hr />
+                    <br />
+                    <h5>2. Preecha os dados</h5>
+                    <br />
+                    <hr />
+                    <br />
+                    <h5>3. Faça o Upload do Arquivo</h5>
+                    <br />
+                    <p><input type="file" required id="fileEspecie" ref="fileEspecie" /></p>
+                    <br />
+                    <hr />
+                    <h5>4. Selecione uma Regra de Upload</h5>
+                    <br />
+                    <p>
+                        <select class="form-control" id="regraUploadEspecie">
+                            <option value="1">1. Atualizar: Atualiza os registros atuais e inclui novos</option>
+                            <option value="2">2. Incluir: Apenas inclui novos</option>
+                            <option value="3">3. Limpar: Limpa a base antiga e cria uma nova</option>
+                        </select>
+                    </p>
+                    <br />
+                    <hr />
+                    <button class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#grupos-form',
+            data() {
+                return {
+                    empresaID: 0,
+                    contasContabeis: {},
+                    grupos: {},
+                    especies: {},
+                    propriedades: {},
+                    especieSelecionada: 0,
+                    especiePropriedades: {},
+                    especiePropriedadesNovas: [],
+                    grupo: {
+                        ID: 0,
+                        EmpresaID: 0,
+                        Codigo: '',
+                        Nome: '',
+                        ContaContabilID: null
+                    },
+                    especie: {
+                        ID: 0,
+                        GrupoID: 0,
+                        Codigo: '',
+                        Nome: ''
+                    },
+                    propriedade: {
+                        ID: 0,
+                        EmpresaID: 0,
+                        Codigo: '',
+                        Nome: '',
+                        Fixa: false,
+                        Valores: [],
+                        VincularEspecies: false
+                    },
+                    errors: {},
+                    permissaoGrupo: '',
+                    permissaoEspecie: ''
+                };
+            },
+
+            methods: {
+
+                listarContasContabeis() {
+
+                    api.get('contacontabil/getall/' + this.empresaID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.contasContabeis = data;
+                        });
+
+                },
+
+                listarGrupos() {
+
+                    api.get('grupo/getByEmpresaID/' + this.empresaID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.grupos = data;
+                        });
+
+                },
+
+                listarEspecies(grupoID) {
+
+                    api.get('especie/getByGrupoID/' + grupoID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.especies = data;
+                        });
+                },
+
+                listarPropriedades() {
+
+                    api.get('propriedade/getByEmpresaID/' + this.empresaID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.propriedades = data;
+                        });
+
+                },
+
+                listarEspeciePropriedades(especieID) {
+
+                    api.get('especiePropriedade/getByEspecieID/' + especieID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.especiePropriedades = data;
+                        });
+                },
+
+                salvarGrupo() {
+
+                    const self = this;
+                    const { grupo } = this;
+
+                    let urlReq = config.baseURL + 'grupo';
+
+                    let metodo = 'post';
+
+                    if (grupo.ID != 0) {
+                        urlReq = urlReq + '/' + grupo.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (grupo)
+                    }).then(function () {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Grupo salvo com sucesso!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        $('#modalCadastroGrupo').modal('hide');
+
+                        self.listarGrupos();
+
+                        self.grupo.ID = 0;
+                        self.grupo.Codigo = '';
+                        self.grupo.Nome = '';
+                        self.grupo.ContaContabilID = null;
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editar(grupoID) {
+
+                    api.get('grupo/' + grupoID, true)
+                        .then(({ data, errors }) => {
+
+                            this.errors = errors || {};
+
+                            if (errors) {
+                                return;
+                            }
+
+                            this.grupo = data;
+
+                            $('#modalCadastroGrupo').modal('show');
+                        });
+                },
+
+                excluir(id) {
+
+                    var self = this;
+
+                    Swal.fire({
+                        title: 'Deseja realmente excluir esse Grupo?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, Pode excluir.'
+                    }).then((result) => {
+                        if (result.value) {
+
+                            axios.request({
+                                url: config.baseURL + 'grupo/' + id,
+                                method: 'delete',
+                                headers: {
+                                    "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                }
+                            }).then(function () {
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Parabéns',
+                                    text: 'Grupo excluído com sucesso',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    onClose: () => {
+
+                                        self.listarGrupos();
+                                    }
+                                });
+
+                            }).catch(function (erro) {
+
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: erro.response.data.Message
+                                });
+                            });
+                        }
+                    });
+                },
+
+                salvarEspecie() {
+
+                    var self = this;
+
+                    const { especie } = this;
+
+                    let urlReq = config.baseURL + 'especie';
+
+                    let metodo = 'post';
+
+                    if (especie.ID != 0) {
+                        urlReq = urlReq + '/' + especie.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (especie)
+                    }).then(function (resp) {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Espécie salva com sucesso!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            onClose: () => {
+
+                                clearInterval(timerInterval);
+
+                                self.especies.push({ ID: resp.data.ID, GrupoID: resp.data.GrupoID, Codigo: resp.data.Codigo, Nome: resp.data.Nome });
+
+                                $('#modalCadastroEspecie').modal('hide');
+
+                                especie.ID = 0;
+                                especie.GrupoID = 0;
+                                especie.Codigo = '';
+                                especie.Nome = '';
+                            }
+                        });
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editarEspecie(especieID) {
+
+                    api.get('especie/' + especieID, true)
+                        .then(({ data, errors }) => {
+
+                            this.errors = errors || {};
+
+                            if (errors) {
+                                return;
+                            }
+
+                            this.especie = data;
+
+                            $('#modalCadastroEspecie').modal('show');
+                        });
+                },
+
+                excluirEspecie(index) {
+
+                    var self = this;
+
+                    Swal.fire({
+                        title: 'Deseja realmente excluir essa Espécie?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, Pode excluir.'
+                    }).then((result) => {
+                        if (result.value) {
+
+                            axios.request({
+                                url: config.baseURL + 'especie/' + self.especies[index].ID,
+                                method: 'delete',
+                                headers: {
+                                    "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                }
+                            }).then(function () {
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Parabéns',
+                                    text: 'Espécie excluída com sucesso',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    onClose: () => {
+
+                                        self.especies.splice(index, 1);
+                                    }
+                                });
+
+                            }).catch(function (erro) {
+
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: erro.response.data.Message
+                                });
+                            });
+                        }
+                    });
+                },
+
+                setGrupoEspecie(grupoID) {
+
+                    this.especie.GrupoID = grupoID;
+                    $('#modalCadastroEspecie').modal('show');
+                },
+
+                setValores() {
+
+                    if (this.propriedade.Fixa)
+                        this.propriedade.Valores = []
+                    else
+                        this.propriedade.Valores.push({ Valor: '' });
+
+                },
+
+                removeValor(index) {
+
+                    this.propriedade.Valores.splice(index, 1);
+                },
+
+                salvarPropriedade() {
+
+                    var self = this;
+
+                    const { propriedade } = this;
+
+                    let urlReq = config.baseURL + 'propriedade';
+
+                    let metodo = 'post';
+
+                    if (propriedade.ID != 0) {
+                        urlReq = urlReq + '/' + propriedade.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (propriedade)
+                    }).then(function (resp) {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Propriedade salva com sucesso!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            onClose: () => {
+
+                                clearInterval(timerInterval);
+
+                                self.propriedades.push({ ID: resp.data.ID, EmpresaID: resp.data.EmpresaID, Codigo: resp.data.Codigo, Nome: resp.data.Nome, Fixa: resp.data.Fixa, Valores: resp.data.Valores, VincularEspecies: resp.data.VincularEspecies });
+
+                                if (propriedade.VincularEspecies) {
+
+                                    self.listarEspeciePropriedades(self.especieSelecionada);
+                                    $('#modalCadastroPropriedade').modal('hide');
+                                }
+
+                                self.propriedade.ID = 0;
+                                self.propriedade.Codigo = '';
+                                self.propriedade.Nome = '';
+                                self.propriedade.Fixa = false;
+                                self.propriedade.Valores = [];
+                                self.propriedade.VincularEspecies = false;
+
+                                $('.nav-tabs a[href="#tabPesquisa"]').tab('show');
+                            }
+                        });
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                vincularEspeciePropriedades() {
+
+                    var self = this;
+
+                    var selecionados = $('#kt_select2_3').val();
+
+                    for (var i = 0; i < selecionados.length; i++) {
+
+                        self.especiePropriedadesNovas.push({ EspecieID: self.especieSelecionada, PropriedadeID: selecionados[i] });
+                    }
+
+                    axios.request({
+                        url: config.baseURL + 'especiepropriedade',
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (self.especiePropriedadesNovas)
+                    }).then(function () {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Propriedades vinculadas com sucesso!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                self.listarEspeciePropriedades(self.especieSelecionada);
+                                $('#modalCadastroPropriedade').modal('hide');
+                            }
+                        });
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                excluirEspeciePropriedade(index) {
+
+                    var self = this;
+
+                    Swal.fire({
+                        title: 'Deseja realmente excluir a Propriedade dessa Espécie?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, Pode excluir.'
+                    }).then((result) => {
+                        if (result.value) {
+
+                            axios.request({
+                                url: config.baseURL + 'especiePropriedade/' + self.especiePropriedades[index].ID,
+                                method: 'delete',
+                                headers: {
+                                    "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                }
+                            }).then(function () {
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Parabéns',
+                                    text: 'Propriedade excluída com sucesso dessa Espécie',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    onClose: () => {
+
+                                        self.especiePropriedades.splice(index, 1);
+                                    }
+                                });
+
+                            }).catch(function (erro) {
+
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: erro.response.data.Message
+                                });
+                            });
+                        }
+                    });
+                },
+
+                upload() {
+
+                    var self = this;
+
+                    let formData = new FormData();
+
+                    formData.append('file', self.$refs.file.files[0]);
+
+                    axios.request({
+                        url: config.baseURL + 'upload/novo/' + localStorage.getItem('empresaID') + '/2/' + $('#regraUpload').val(),
+                        data: formData,
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function (resp) {
+
+                        self.processar(resp.data.ID);
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                uploadEspecie() {
+
+                    var self = this;
+
+                    let formData = new FormData();
+
+                    formData.append('file', self.$refs.fileEspecie.files[0]);
+
+                    axios.request({
+                        url: config.baseURL + 'upload/novo/' + localStorage.getItem('empresaID') + '/6/' + $('#regraUploadEspecie').val(),
+                        data: formData,
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function (resp) {
+
+                        self.processar(resp.data.ID);
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                processar(id) {
+
+                    var self = this;
+
+                    axios.request({
+                        url: config.baseURL + 'upload/processar/' + id,
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Upload Enviado com Sucesso. Você pode conferir o Status do Processamento na Tela de Administração de Uploads.',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            onClose: () => {
+
+                                clearInterval(timerInterval);
+
+                                window.location.reload();
+
+                                $('#modalUpload').modal('hide');
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                getPermissaoGrupo() {
+
+                    let self = this;
+
+                    api.get('permissao/getByFuncionalidade/grupo', true)
+                        .then(({ data, errors }) => {
+                            self.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            self.permissaoGrupo = data;
+
+                            if (self.permissaoGrupo.indexOf('GET') < 0) {
+
+                                Swal.fire({
+                                    type: 'warning',
+                                    title: 'Acesso Negado',
+                                    html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                    showConfirmButton: false,
+                                    timer: 5000,
+                                    onClose: () => {
+
+                                        history.go('-1');
+                                    }
+                                });
+                            }
+                            else
+                                this.getPermissaoEspecie();
+                        });
+                },
+
+                getPermissaoEspecie() {
+
+                    let self = this;
+
+                    api.get('permissao/getByFuncionalidade/especie', true)
+                        .then(({ data, errors }) => {
+                            self.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            self.permissaoEspecie = data;
+
+                            if (self.permissaoEspecie.indexOf('GET') < 0) {
+
+                                Swal.fire({
+                                    type: 'warning',
+                                    title: 'Acesso Negado',
+                                    html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                    showConfirmButton: false,
+                                    timer: 5000,
+                                    onClose: () => {
+
+                                        history.go('-1');
+                                    }
+                                });
+                            }
+                            else {
+
+                                self.empresaID = localStorage.getItem('empresaID');
+                                self.grupo.EmpresaID = localStorage.getItem('empresaID');
+                                self.propriedade.EmpresaID = localStorage.getItem('empresaID');
+                                self.listarGrupos();
+                                self.listarContasContabeis();
+                                self.listarPropriedades();
+                            }
+                        });
+                }
+            },
+
+            mounted: function () {
+
+                this.getPermissaoGrupo();
+            }
+        });
+
+    </script>
+}

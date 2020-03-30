@@ -1,0 +1,242 @@
+﻿
+<div class="kt-portlet">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Propriedades
+            </h3>
+        </div>
+    </div>
+
+    <!--begin::Form-->
+    <form class="kt-form" id="propriedade-form" v-on:submit.prevent="salvarPropriedade">
+        <div class="kt-portlet__body">
+            <div class="row">
+                <button type="button" class="btn btn-success" v-on:click="propriedade.VincularEspecies = false" v-if="propriedade.VincularEspecies"><i class="fas fa-check"></i>&nbsp;Essa Propriedade será vinculada à todas as Espécies Ativas</button>
+                <button type="button" class="btn btn-secondary" v-on:click="propriedade.VincularEspecies = true" v-else>Selecione aqui para vincular essa Propriedade à todas as Espécies Ativas</button>
+            </div>
+            <br /><br />
+            <div class="row form-group">
+                <div class="col-sm-12 col-md-2">
+                    <label>Código</label>
+                    <input type="text" placeholder="Código" class="form-control" v-model="propriedade.Codigo" required>
+                </div>
+                <div class="col-sm-12 col-md-8">
+                    <label>Nome da Propriedade</label>
+                    <input type="text" placeholder="Nome da Propriedade" class="form-control" v-model="propriedade.Nome" required>
+                </div>
+                <div class="col-sm-12 col-md-2 pt-5">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" v-model="propriedade.Fixa" v-on:click="setValores">
+                        <label class="form-check-label">Valores Fixos?</label>
+                    </div>
+                </div>
+            </div>
+            <fieldset v-if="propriedade.Fixa">
+                <legend>Valores</legend>
+                <div class="row form-group" v-for="(v, index) in propriedade.Valores">
+                    <div class="col-4">
+                        <input type="text" placeholder="Valor" class="form-control" required v-model="v.Valor">
+                    </div>
+                    <div class="col-1">
+                        <button type="button" class="btn btn-danger" v-on:click="removeValor(index)">&nbsp;<i class="la la-trash fa-lg"></i></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2">
+                        <button type="button" class="btn btn-primary btn-sm" v-on:click="propriedade.Valores.push({Valor:''})">&nbsp;<i class="la la-plus fa-lg"></i>&nbsp;Novo Valor</button>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+                <button type="button" class="btn btn-danger" onclick="history.go(-1)">Voltar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#propriedade-form',
+            data() {
+                return {
+                    propriedade: {
+                        ID: 0,
+                        EmpresaID: localStorage.getItem('empresaID'),
+                        Codigo: '',
+                        Nome: '',
+                        Fixa: false,
+                        Valores: [],
+                        VincularEspecies: false
+                    },
+                    errors: {}
+                };
+            },
+
+            methods: {
+
+                setValores() {
+
+                    if (this.propriedade.Fixa)
+                        this.propriedade.Valores = []
+                    else
+                        this.propriedade.Valores.push({ Valor: '' });
+
+                },
+
+                removeValor(index) {
+
+                    let valor = this.propriedade.Valores[index];
+
+                    if (valor.ID === undefined)
+                        this.propriedade.Valores.splice(index, 1);
+                    else
+                        this.excluir(index);
+                },
+
+                salvarPropriedade() {
+
+                    const { propriedade } = this;
+
+                    let urlReq = config.baseURL + 'propriedade';
+
+                    let metodo = 'post';
+
+                    if (propriedade.ID) {
+                        urlReq = urlReq + '/' + propriedade.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (propriedade)
+                    }).then(function () {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Propriedade salva com sucesso!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            onClose: () => {
+
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/propriedade';
+                            }
+                        });
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editar(id) {
+
+                    api.get('propriedade/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.propriedade = data;
+                        });
+                },
+
+                excluir(index) {
+
+                    let self = this;
+                    let valor = self.propriedade.Valores[index];
+
+                    Swal.fire({
+                        title: 'Deseja realmente excluir esse Valor?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, Pode excluir.'
+                    }).then((result) => {
+                        if (result.value) {
+
+                            axios.request({
+                                url: config.baseURL + 'propriedadeValor/' + valor.ID,
+                                method: 'delete',
+                                headers: {
+                                    "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                }
+                            }).then(function () {
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Parabéns',
+                                    text: 'Valor excluído com sucesso',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    onClose: () => {
+
+                                        self.propriedade.Valores.splice(index, 1);
+                                    }
+                                });
+
+                            }).catch(function (erro) {
+
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: erro.response.data.Message
+                                });
+                            });
+                        }
+                    });
+                }
+            },
+
+            created: function () {
+
+                const id = this.getId();
+
+                if (id) {
+                    this.editar(id);
+                }
+
+                api.get('permissao/getByFuncionalidade/propriedade', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if ((id && data.indexOf('PUT') < 0) || !id && data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+
+                    });
+            }
+        });
+
+    </script>
+}

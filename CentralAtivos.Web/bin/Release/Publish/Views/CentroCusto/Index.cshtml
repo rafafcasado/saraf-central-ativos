@@ -1,0 +1,579 @@
+﻿<style type="text/css">
+
+    .tree-view {
+        border-bottom: 1px dashed black;
+        padding-bottom: 5px;
+        padding-top: 10px;
+    }
+
+        .tree-view:hover {
+            background-color: lightblue;
+        }
+
+    .nivel-1 {
+        color: blue;
+    }
+
+    .nivel-2 {
+        color: purple;
+        padding-left: 60px;
+    }
+
+    .nivel-3 {
+        color: green;
+        padding-left: 120px;
+    }
+
+    .nivel-4 {
+        color: red;
+        padding-left: 180px;
+    }
+
+    .nivel-5 {
+        color: gray;
+        padding-left: 240px;
+    }
+
+    .nivel-6 {
+        color: salmon;
+        padding-left: 300px;
+    }
+
+    .nivel-7 {
+        color: orangered;
+        padding-left: 360px;
+    }
+
+    .nivel-8 {
+        color: darkgoldenrod;
+        padding-left: 420px;
+    }
+
+    .nivel-9 {
+        padding-left: 480px;
+    }
+
+    .nivel-10 {
+        padding-left: 540px;
+    }
+</style>
+
+
+<div id="centros-form">
+    <div class="kt-content  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet kt-portlet--mobile">
+            <div class="kt-portlet__head kt-portlet__head--lg">
+                <div class="kt-portlet__head-label">
+                    <span class="kt-portlet__head-icon">
+                        <i class="kt-font-brand flaticon2-line-chart"></i>
+                    </span>
+                    <h3 class="kt-portlet__head-title">
+                        Lista de Centros de Custo
+                    </h3>
+                </div>
+                <div class="kt-portlet__head-toolbar">
+                    <div class="kt-portlet__head-wrapper">
+                        <div class="kt-portlet__head-actions">
+                            <button class="btn btn-success btn-brand btn-elevate btn-icon-sm" data-toggle="modal" data-target="#modalUpload" v-if="permissao.indexOf('POST') >= 0">
+                                <i class="la la-upload"></i> Upload
+                            </button>
+                            <button class="btn btn-brand btn-elevate btn-icon-sm" v-on:click="novo" v-if="permissao.indexOf('POST') >= 0">
+                                <i class="la la-plus"></i> Novo Centro de Custo Principal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="kt-portlet__body">
+
+                <div id="kt_table_1_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+
+                    <div class="alert alert-info" v-if="centros.length === undefined || centros.length === 0">Não há nenhum Centro de Custo Cadastrado</div>
+
+                    <div class="row tree-view" v-for="(centro, index) in centros" v-bind:data-paiid="centro.PaiID">
+                        <div class="col-10" v-bind:class="'nivel-' + centro.Nivel">
+                            <button v-if="centro.plus" class="btn btn-xs btn-primary btn-icon-sm float-left" v-on:click="abrirNo(index)" title="Expandir">&nbsp;<i class="la la-plus"></i></button>
+                            <button v-if="centro.minus" class="btn btn-xs btn-danger btn-icon-sm float-left" v-on:click="fecharNo(index)" title="Recolher">&nbsp;<i class="la la-minus"></i></button>
+                            <h4 class="float-left ml-2">{{centro.Codigo}} {{centro.Nome}}</h4>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-xs btn-secondary btn-icon-sm" v-on:click="incluirSub(index)" title="Incluir Filho" v-if="permissao.indexOf('POST') >= 0">&nbsp;<i class="la la-arrow-down"></i></button>
+                            <button class="btn btn-xs btn-secondary btn-icon-sm" title="Editar" v-if="permissao.indexOf('PUT') >= 0">&nbsp;<i class="la la-pencil" v-on:click="editar(centro.ID)"></i></button>
+                            <button class="btn btn-xs btn-secondary btn-icon-sm" title="Excluir" v-if="permissao.indexOf('DELETE') >= 0">&nbsp;<i class="la la-trash" v-on:click="excluir(centro.ID)"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--end::Portlet-->
+        <!--end::Portlet-->
+    </div>
+
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalCadastro">
+        <div class="modal-dialog modal-lg" role="document">
+            <form class="modal-content" v-on:submit.prevent="salvar">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastro de Centro de Custo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col-md-5 col-sm-12">
+                            <label>Código <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Código do Centro de Custo" required v-model="centro.Codigo">
+                        </div>
+                        <div class="col-md-7 col-sm-12">
+                            <label>Nome <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Nome do Centro de Custo" required v-model="centro.Nome">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-5 col-sm-12">
+                            <label>Responsável</label>
+                            <select class="form-control" v-model="centro.ResponsavelID">
+                                <option value="null">- Sem Responsável Vinculado -</option>
+                                <option v-bind:value="resp.ID" v-for="resp in responsaveis">{{resp.Nome}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalUpload">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload de Arquivos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="modal-body" v-on:submit.prevent="upload">
+                    <h5>1. Baixe o Modelo</h5>
+                    <p><a href="~/uploads/modelos/modelo-centros-custo.csv">Clique aqui para baixar o arquivo modelo</a></p>
+                    <hr />
+                    <br />
+                    <h5>2. Preecha os dados</h5>
+                    <br />
+                    <hr />
+                    <br />
+                    <h5>3. Faça o Upload do Arquivo</h5>
+                    <br />
+                    <p><input type="file" required id="file" ref="file" /></p>
+                    <br />
+                    <hr />
+                    <h5>4. Selecione uma Regra de Upload</h5>
+                    <br />
+                    <p>
+                        <select class="form-control" id="regraUpload">
+                            <option value="1">1. Atualizar: Atualiza os registros atuais e inclui novos</option>
+                            <option value="2">2. Incluir: Apenas inclui novos</option>
+                            <option value="3">3. Limpar: Limpa a base antiga e cria uma nova</option>
+                        </select>
+                    </p>
+                    <br />
+                    <hr />
+                    <button class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#centros-form',
+            data() {
+                return {
+                    empresaID: 0,
+                    centros: {},
+                    centro: {
+                        ID: 0,
+                        EmpresaID: localStorage.getItem('empresaID'),
+                        Codigo: '',
+                        Nome: '',
+                        CodigoInterno: 0,
+                        PaiID: null,
+                        ResponsavelID: null
+                    },
+                    responsaveis: {},
+                    errors: {},
+                    permissao: '',
+                    indiceSelecionado: 0
+                };
+            },
+
+            methods: {
+
+                novo() {
+
+                    this.centro.ID = 0;
+                    this.centro.Codigo = '';
+                    this.centro.Nome = '';
+                    this.centro.CodigoInterno = 0;
+                    this.centro.PaiID = null;
+                    this.centro.ResponsavelID = null;
+
+                    $('#modalCadastro').modal('show');
+                },
+
+                listar() {
+
+                    api.get('centroCusto/getPrincipaisByEmpresaID/' + this.empresaID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.centros = data;
+
+                            this.centros.forEach(el => {
+                                el['plus'] = true;
+                                el['minus'] = false;
+                            });
+
+                            this.centros = this.centros.sort((a, b) => a.CodigoInterno - b.CodigoInterno);
+                        });
+
+                },
+
+                listarResponsaveis() {
+
+                    api.get('responsavel/getByEmpresaID/' + this.empresaID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.responsaveis = data;
+
+                        });
+
+                },
+
+                salvar() {
+
+                    const self = this;
+
+                    let urlReq = config.baseURL + 'centroCusto';
+
+                    let metodo = 'post';
+
+                    if (this.centro.ID != 0) {
+                        urlReq = urlReq + '/' + this.centro.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (this.centro)
+                    }).then(function (resp) {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Centro de Custo salvo com sucesso!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        $('#modalCadastro').modal('hide');
+
+                        if (self.indiceSelecionado == 0 && metodo == 'post')
+                            self.centros.push({ ID: resp.data.ID, Codigo: resp.data.Codigo, Nome: resp.data.Nome, ResponsavelID: resp.data.ResponsavelID, CodigoInterno: resp.data.CodigoInterno, PaiID: resp.data.PaiID, Nivel: 1, plus: true });
+                        else {
+
+                            var centroAlterado = self.centros.filter(x => { return x.ID == resp.data.ID })[0];
+
+                            centroAlterado.Codigo = resp.data.Codigo;
+                            centroAlterado.Nome = resp.data.Nome;
+                            centroAlterado.ResponsavelID = resp.data.ResponsavelID;
+                        }
+
+                        self.fecharNo(self.indiceSelecionado);
+                        self.abrirNo(self.indiceSelecionado);
+
+                        self.centro.ID = 0;
+                        self.centro.Codigo = '';
+                        self.centro.Nome = '';
+                        self.centro.CodigoInterno = 0;
+                        self.centro.PaiID = null;
+                        self.centro.ResponsavelID = null;
+
+                        self.indiceSelecionado = 0;
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                incluirSub(index) {
+
+                    this.indiceSelecionado = index;
+
+                    this.centro.ID = 0;
+                    this.centro.Codigo = '';
+                    this.centro.Nome = '';
+                    this.centro.CodigoInterno = 0;
+                    this.centro.PaiID = this.centros[index].ID;
+                    this.centro.ResponsavelID = null;
+                    $('#modalCadastro').modal('show');
+                },
+
+                abrirNo(index) {
+
+                    const paiID = this.centros[index].ID;
+
+                    api.get('centroCusto/getSubCentrosByCentroID/' + paiID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            if (data.length > 0) {
+
+                                this.centros[index].plus = false;
+                                this.centros[index].minus = true;
+
+                                data.forEach(el => {
+
+                                    el['plus'] = true;
+                                    el['minus'] = false;
+                                    this.centros.push(el);
+                                });
+
+                                this.centros = this.centros.sort((a, b) => a.CodigoInterno - b.CodigoInterno);
+                            }
+
+                        });
+                },
+
+                fecharNo(index) {
+
+                    const pai = this.centros[index];
+
+                    this.centros[index].plus = true;
+                    this.centros[index].minus = false;
+
+                    const centrosRemover = [];
+
+                    this.centros.forEach(el => {
+
+                        if (el.ID != pai.ID)
+                            if (el.CodigoInterno.toString().startsWith(pai.CodigoInterno.toString()))
+                                centrosRemover.push(el);
+                    });
+
+                    centrosRemover.forEach(el => {
+                        this.removeCentro(el);
+                    });
+                },
+
+                removeCentro: function (centro) {
+                    this.centros.splice(this.centros.indexOf(centro), 1);
+                },
+
+                editar(centroID) {
+
+                    api.get('centroCusto/' + centroID, true)
+                        .then(({ data, errors }) => {
+
+                            this.errors = errors || {};
+
+                            if (errors) {
+                                return;
+                            }
+
+                            this.centro = data;
+
+                            $('#modalCadastro').modal('show');
+                        });
+                },
+
+                excluir(id) {
+
+                    var self = this;
+
+                    Swal.fire({
+                        title: 'Deseja realmente excluir esse Centro de Custo?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, Pode excluir.'
+                    }).then((result) => {
+                        if (result.value) {
+
+                            axios.request({
+                                url: config.baseURL + 'centroCusto/' + id,
+                                method: 'delete',
+                                headers: {
+                                    "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                }
+                            }).then(function () {
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Parabéns',
+                                    text: 'Centro de Custo excluído com sucesso',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    onClose: () => {
+
+                                        self.listar();
+                                    }
+                                });
+
+                            }).catch(function (erro) {
+
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: erro.response.data.Message
+                                });
+                            });
+                        }
+                    });
+                },
+
+                upload() {
+
+                    var self = this;
+
+                    let formData = new FormData();
+
+                    formData.append('file', self.$refs.file.files[0]);
+
+                    $('#modalUpload').modal('hide');
+
+                    api.aguarde();
+
+                    axios.request({
+                        url: config.baseURL + 'upload/novo/' + localStorage.getItem('empresaID') + '/8/' + $('#regraUpload').val(),
+                        data: formData,
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function (resp) {
+
+                        self.processar(resp.data.ID);
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                processar(id) {
+
+                    var self = this;
+
+                    axios.request({
+                        url: config.baseURL + 'upload/processar/' + id,
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        }
+                    }).then(function () {
+
+                        api.fecharAguarde();
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Upload Enviado com Sucesso. Você pode conferir o Status do Processamento na Tela de Administração de Uploads.',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            onClose: () => {
+
+                                clearInterval(timerInterval);
+                                self.listar();
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                }
+            },
+
+            mounted: function () {
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/centrocusto', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        self.permissao = data;
+
+                        if (data.indexOf('GET') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                        else {
+
+                            const id = localStorage.getItem('empresaID');
+
+                            if (id) {
+
+                                this.empresaID = id;
+                                this.listar();
+                                this.listarResponsaveis();
+                            }
+                        }
+                    });
+
+            }
+        });
+
+    </script>
+}

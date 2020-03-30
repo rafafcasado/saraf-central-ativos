@@ -1,0 +1,689 @@
+﻿<link href="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/cr-1.5.0/datatables.min.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+
+<style>
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+</style>
+
+<div id="ordem-servico-list">
+    <div class="kt-content  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet kt-portlet--mobile">
+            <div class="kt-portlet__head kt-portlet__head--lg">
+                <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">
+                        Ordens de Serviço
+                    </h3>
+                </div>
+                <div class="kt-portlet__head-toolbar">
+                    <div class="kt-portlet__head-wrapper">
+                        <div class="kt-portlet__head-actions">
+                            <span v-if="!usuarioLogado.Responsavel">Para criar nova Ordem de Serviço é preciso ter um Responsável vinculado ao Login</span>
+                            <a href="~/ordemServico/novo" class="btn btn-brand btn-elevate btn-icon-sm" v-if="usuarioLogado.Responsavel && permissao.indexOf('POST') >= 0">
+                                <i class="la la-plus"></i> Nova Ordem de Serviço
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="kt-portlet__body">
+
+                <!--begin: Datatable -->
+                <div id="kt_table_1_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-striped table-bordered" id="kt_table_1" role="grid" aria-describedby="kt_table_1_info">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Motivo</th>
+                                        <th>Status</th>
+                                        <th>Data de Cadastro</th>
+                                        <th>Ações</th>
+                                        <th>Aprovar/Reprovar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(ordem, index) in ordens">
+                                        <td align="center">{{ordem.ID}}</td>
+                                        <td align="center">{{ordem.OrdemServicoMotivoNome}}</td>
+                                        <td align="center"><div v-bind:class="'badge badge-' + (ordem.StatusID == 1 ? 'info' : ordem.StatusID == 2 ? 'success' : 'danger')">{{ordem.Status}}</div></td>
+                                        <td align="center">{{ordem.DataCadastroFormatada}}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-warning" v-on:click="buscar(ordem.ID)" v-if="permissao.indexOf('GET') >= 0">&nbsp;<i style="color: white" class="fas fa-search"></i></button>
+                                            <button class="btn btn-sm btn-danger" v-on:click="excluir(ordem.ID)" v-if="permissao.indexOf('DELETE') >= 0">&nbsp;<i class="fas fa-trash"></i></button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" v-on:click="aprovar(ordem.ID, true)" v-if="habilitarAprovarReprovar(ordem)">Aprovar</button>
+                                            <button class="btn btn-sm btn-danger" v-on:click="aprovar(ordem.ID, false)" v-if="habilitarAprovarReprovar(ordem)">Reprovar</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Motivo</th>
+                                        <th>Status</th>
+                                        <th>Data de Cadastro</th>
+                                        <th>Ações</th>
+                                        <th>Aprovar/Reprovar</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!--end: Datatable -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalResumo">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ordem de Serviço</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="kt-notes">
+                        <div class="kt-notes__items">
+                            <div class="kt-notes__item">
+                                <div class="kt-notes__media">
+                                    <span class="kt-notes__icon">
+                                        1
+                                    </span>
+                                </div>
+                                <div class="kt-notes__content">
+                                    <div class="kt-notes__section">
+                                        <div class="kt-notes__info">
+                                            <a class="kt-notes__title">
+                                                Motivo
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="kt-notes__body">
+                                        {{ordemVisualizacao.OrdemServicoMotivoNome}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kt-notes__item">
+                                <div class="kt-notes__media">
+                                    <span class="kt-notes__icon">
+                                        2
+                                    </span>
+                                </div>
+                                <div class="kt-notes__content">
+                                    <div class="kt-notes__section">
+                                        <div class="kt-notes__info">
+                                            <a class="kt-notes__title">
+                                                Origem
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <span class="kt-notes__body">
+                                        {{ordemVisualizacao.Campos.FilialOrigemNome}} > {{ordemVisualizacao.Campos.LocalOrigemNome}}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="kt-notes__item">
+                                <div class="kt-notes__media">
+                                    <span class="kt-notes__icon">
+                                        3
+                                    </span>
+                                </div>
+                                <div class="kt-notes__content">
+                                    <div class="kt-notes__section">
+                                        <div class="kt-notes__info">
+                                            <a class="kt-notes__title">
+                                                Itens
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="kt-notes__body">
+                                        <button disabled class="btn btn-outline-secondary mr-1" v-for="item in ordemVisualizacao.Itens"><i class="fas fa-thumbtack"></i>&nbsp;{{item.Codigo}} {{item.Nome}}</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kt-notes__item">
+                                <div class="kt-notes__media">
+                                    <span class="kt-notes__icon">
+                                        4
+                                    </span>
+                                </div>
+                                <div class="kt-notes__content">
+                                    <div class="kt-notes__section">
+                                        <div class="kt-notes__info">
+                                            <a class="kt-notes__title">
+                                                Outras Informações
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="kt-notes__body">
+                                        <div class="form-group row">
+                                            <div class="col-12" v-if="motivoSelecionado.CamposVinculados.indexOf('Justificativa') >= 0">
+                                                <label>Justificativa</label>
+                                                <textarea class="form-control" disabled rows="3">{{ordemVisualizacao.Campos.Justificativa}}</textarea>
+                                            </div>
+                                            <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('FilialDestinoID') >= 0">
+                                                <label>Filial Destino</label>
+                                                <input type="text" disabled class="form-control" v-bind:value="ordemVisualizacao.Campos.FilialDestinoNome" />
+                                            </div>
+                                            <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('LocalDestinoID') >= 0">
+                                                <label>Local Destino</label>
+                                                <input type="text" disabled class="form-control" v-bind:value="ordemVisualizacao.Campos.LocalDestinoNome" />
+                                            </div>
+                                            <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('ResponsavelDestinoID') >= 0">
+                                                <label>Responsável no Destino</label>
+                                                <input type="text" disabled class="form-control" v-bind:value="ordemVisualizacao.Campos.ResponsavelDestinoNome" />
+                                            </div>
+                                            <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('ResponsavelOrigemID') >= 0">
+                                                <label>Responsável na Origem</label>
+                                                <input type="text" disabled class="form-control" v-bind:value="ordemVisualizacao.Campos.ResponsavelOrigemNome" />
+                                            </div>
+                                            <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('LocalExterno') >= 0">
+                                                <label>Local Externo</label>
+                                                <input type="text" disabled class="form-control" v-bind:value="ordemVisualizacao.Campos.LocalExterno" />
+                                            </div>
+                                            <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('TipoSinistro') >= 0">
+                                                <label>Tipo de Sinistro</label>
+                                                <input type="text" disabled class="form-control" v-bind:value="ordemVisualizacao.Campos.TipoSinistro" />
+                                            </div>
+                                            <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('GrupoID') >= 0">
+                                                <label>Grupo</label>
+                                                <input type="text" disabled class="form-control" v-bind:value="ordemVisualizacao.Campos.GrupoNome" />
+                                            </div>
+                                            <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('EspecieID') >= 0">
+                                                <label>Espécie</label>
+                                                <input type="text" disabled class="form-control" v-bind:value="ordemVisualizacao.Campos.EspecieNome" />
+                                            </div>
+                                            <div class="col-4" v-if="motivoSelecionado.CamposVinculados.indexOf('Quantidade') >= 0">
+                                                <label>Quantidade</label>
+                                                <input type="text" disabled class="form-control" v-bind:value="ordemVisualizacao.Campos.Quantidade" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kt-notes__item">
+                                <div class="kt-notes__media">
+                                    <span class="kt-notes__icon">
+                                        5
+                                    </span>
+                                </div>
+                                <div class="kt-notes__content">
+                                    <div class="kt-notes__section">
+                                        <div class="kt-notes__info">
+                                            <a class="kt-notes__title">
+                                                Anexos
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <span class="kt-notes__body">
+                                        <a v-bind:href="anexo.Link" target="_blank" disabled class="btn btn-outline-secondary mr-1" v-for="anexo in ordemVisualizacao.Anexos"><i class="fas fa-file-archive"></i>&nbsp;{{anexo.NomeArquivo}}</a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="kt-notes__item">
+                                <div class="kt-notes__media">
+                                    <span class="kt-notes__icon">
+                                        6
+                                    </span>
+                                </div>
+                                <div class="kt-notes__content">
+                                    <div class="kt-notes__section">
+                                        <div class="kt-notes__info">
+                                            <a class="kt-notes__title">
+                                                Imagens
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <span class="kt-notes__body">
+                                        <a v-for="img in ordemVisualizacao.Imagens" v-bind:href="img.Link" target="_blank"><img class="m-2 img-thumbnail" v-bind:src="img.Link" width="70" /></a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/cr-1.5.0/datatables.min.js" type="text/javascript"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.flash.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" type="text/javascript"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js" type="text/javascript"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#ordem-servico-list',
+            data() {
+                return {
+                    ordens: [],
+                    errors: [],
+                    motivos: [],
+                    filiais: [],
+                    locais: [],
+                    responsaveis: [],
+                    grupos: [],
+                    especies: [],
+                    permissao: '',
+                    ordemVisualizacao: {
+                        OrdemServicoMotivoID: 0,
+                        OrdemServicoMotivoNome: '',
+                        Campos: {
+                            FilialOrigemID: 0,
+                            FilialOrigemNome: '',
+                            LocalOrigemID: 0,
+                            LocalOrigemNome: '',
+                            FilialDestinoID: 0,
+                            FilialDestinoNome: '',
+                            LocalDestinoID: 0,
+                            LocalDestinoNome: '',
+                            Justificativa: '',
+                            ResponsavelOrigemID: 0,
+                            ResponsavelOrigemNome: '',
+                            ResponsavelDestinoID: 0,
+                            ResponsavelDestinoNome: '',
+                            LocalExterno: '',
+                            TipoSinistro: '',
+                            GrupoID: 0,
+                            GrupoNome: '',
+                            EspecieID: 0,
+                            EspecieNome: '',
+                            Quantidade: ''
+                        },
+                        Itens: [],
+                        Anexos: [],
+                        Imagens: []
+                    },
+                    usuarioLogado: {},
+                    motivoSelecionado: {
+                        CamposVinculados: ''
+                    }
+                };
+            },
+
+            methods: {
+
+                getUsuarioLogado() {
+
+                    api.get('helpers/getusuariologado', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.usuarioLogado = data;
+                        });
+                },
+
+                listar() {
+
+                    api.get('ordemservico/getordensservico/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.ordens = data;
+                        });
+                },
+
+                listarMotivos() {
+
+                    api.get('ordemservicomotivo/getmotivos', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.motivos = data;
+                        });
+                },
+
+                listarFiliais() {
+
+                    api.get('filial/getbyempresaid/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.filiais = data;
+                        });
+                },
+
+                listarLocais() {
+
+                    let self = this;
+
+                    api.get('local/getbyempresaid/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            self.locais = data;
+                        });
+                },
+
+                listarResponsaveis() {
+
+                    api.get('responsavel/getbyempresaid/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.responsaveis = data;
+                        });
+                },
+
+                listarGrupos() {
+
+                    api.get('grupo/getbyempresaid/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.grupos = data;
+                        });
+                },
+
+                listarEspecies() {
+
+                    api.get('especie/getbyempresaid/' + localStorage.getItem('empresaID'), true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.especies = data;
+                        });
+                },
+
+                buscar(id) {
+
+                    let self = this;
+
+                    api.get('ordemservico/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            self.ordemVisualizacao = data;
+
+                            self.motivoSelecionado = self.motivos.filter(x => { return x.ID == self.ordemVisualizacao.OrdemServicoMotivoID })[0];
+
+                            if (self.motivoSelecionado.CamposVinculados.indexOf('FilialOrigemID') >= 0)
+                                self.ordemVisualizacao.Campos.FilialOrigemNome = self.filiais.filter(x => { return x.ID == self.ordemVisualizacao.Campos.FilialOrigemID })[0].Nome;
+
+                            if (self.motivoSelecionado.CamposVinculados.indexOf('LocalOrigemID') >= 0)
+                                self.ordemVisualizacao.Campos.LocalOrigemNome = self.locais.filter(x => { return x.ID == self.ordemVisualizacao.Campos.LocalOrigemID })[0].CaminhoPao;
+
+                            if (self.motivoSelecionado.CamposVinculados.indexOf('FilialDestinoID') >= 0)
+                                self.ordemVisualizacao.Campos.FilialDestinoNome = self.filiais.filter(x => { return x.ID == self.ordemVisualizacao.Campos.FilialDestinoID })[0].Nome;
+
+                            if (self.motivoSelecionado.CamposVinculados.indexOf('LocalDestinoID') >= 0)
+                                self.ordemVisualizacao.Campos.LocalDestinoNome = self.locais.filter(x => { return x.ID == self.ordemVisualizacao.Campos.LocalDestinoID })[0].CaminhoPao;
+
+                            if (self.motivoSelecionado.CamposVinculados.indexOf('ResponsavelOrigemID') >= 0)
+                                self.ordemVisualizacao.Campos.ResponsavelOrigemNome = self.responsaveis.filter(x => { return x.ID == self.ordemVisualizacao.Campos.ResponsavelOrigemID })[0].Nome;
+
+                            if (self.motivoSelecionado.CamposVinculados.indexOf('ResponsavelDestinoID') >= 0)
+                                self.ordemVisualizacao.Campos.ResponsavelDestinoNome = self.responsaveis.filter(x => { return x.ID == self.ordemVisualizacao.Campos.ResponsavelDestinoID })[0].Nome;
+
+                            if (self.motivoSelecionado.CamposVinculados.indexOf('GrupoID') >= 0) {
+
+                                let grupo = self.grupos.filter(x => { return x.ID == self.ordemVisualizacao.Campos.GrupoID })[0];
+
+                                self.ordemVisualizacao.Campos.GrupoNome = grupo.Codigo + ' ' + grupo.Nome;
+                            }
+
+                            if (self.motivoSelecionado.CamposVinculados.indexOf('EspecieID') >= 0) {
+
+                                let especie = self.especies.filter(x => { return x.ID == self.ordemVisualizacao.Campos.EspecieID })[0];
+
+                                self.ordemVisualizacao.Campos.EspecieNome = especie.Codigo + ' ' + especie.Nome;
+                            }
+
+                            let anexos = self.ordemVisualizacao.Anexos;
+
+                            self.ordemVisualizacao.Anexos = anexos.filter(x => { return x.Imagem == false });
+                            self.ordemVisualizacao.Imagens = anexos.filter(x => { return x.Imagem == true });
+
+                            $('#modalResumo').modal('show');
+                        });
+                },
+
+                excluir(id) {
+
+                    var self = this;
+
+                    Swal.fire({
+                        title: 'Deseja realmente excluir essa Ordem de Serviço?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, Pode excluir.'
+                    }).then((result) => {
+                        if (result.value) {
+
+                            axios.request({
+                                url: config.baseURL + 'ordemServico/' + id,
+                                method: 'delete',
+                                headers: {
+                                    "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                }
+                            }).then(function () {
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Parabéns',
+                                    text: 'Ordem de Serviço excluída com sucesso',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    onClose: () => {
+
+                                        self.listar();
+                                    }
+                                });
+
+                            }).catch(function (erro) {
+
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: erro.response.data.Message
+                                });
+                            });
+                        }
+                    });
+
+                },
+
+                habilitarAprovarReprovar(ordem) {
+
+                    return this.permissao.indexOf('PUT') >= 0 && ordem.StatusID == 1 && ordem.Campos.ResponsavelDestinoID && this.usuarioLogado.Responsavel && parseInt(ordem.Campos.ResponsavelDestinoID) == this.usuarioLogado.Responsavel.ID;
+                },
+
+                aprovar(id, aprovar) {
+
+                    let self = this;
+
+                    Swal.fire({
+                        title: 'Deseja realmente ' + (aprovar ? 'Aprovar' : 'Reprovar') + ' essa Ordem de Serviço?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, Pode ' + (aprovar ? 'Aprovar' : 'Reprovar')
+                    }).then((result) => {
+                        if (result.value) {
+
+                            axios.request({
+                                url: config.baseURL + 'ordemservico/alterastatus/' + id + '/' + aprovar,
+                                method: 'PUT',
+                                headers: {
+                                    "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                                }
+                            }).then(function () {
+
+                                Swal.fire({
+                                    type: 'success',
+                                    title: 'Parabéns',
+                                    text: 'Ordem de Serviço ' + (aprovar ? 'Aprovada' : 'Reprovada') + ' com Sucesso!',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    onClose: () => {
+                                        clearInterval(timerInterval);
+                                        self.listar();
+                                    }
+                                });
+
+                            }).catch(function (erro) {
+
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Erro',
+                                    text: erro.response.data.Message
+                                });
+                            });
+                        }
+                    });
+                }
+
+            },
+            mounted() {
+
+                let self = this;
+
+                api.get('permissao/getByFuncionalidade/ordemservico', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        self.permissao = data;
+
+                        if (data.indexOf('GET') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+                        else {
+
+                            self.getUsuarioLogado();
+                            self.listar();
+                            self.listarMotivos();
+                            self.listarFiliais();
+                            self.listarLocais();
+                            self.listarResponsaveis();
+                            self.listarGrupos();
+                            self.listarEspecies();
+                        }
+                    });
+            },
+
+            watch: {
+                ordens() {
+                    if (this.dt) {
+                        this.dt.destroy();
+                    }
+                    this.$nextTick(() => {
+                        this.dt = $('#kt_table_1').DataTable({
+                            //colReorder: true,
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'csv',
+                                    text: 'CSV'
+                                },
+                                {
+                                    extend: 'excel',
+                                    text: 'XLS'
+                                },
+                                {
+                                    extend: 'copy',
+                                    text: 'Copiar os Dados'
+                                },
+                                {
+                                    extend: 'colvis',
+                                    text: 'Colunas Disponíveis'
+                                }
+                            ],
+
+                            "oLanguage": {
+
+                                "sSearch": "Pesquisar:",
+
+                                "oPaginate": {
+
+                                    "sPrevious": "Anterior",
+                                    "sNext": "Próximo"
+                                },
+
+                                "sInfo": "Mostrando _START_ até _END_ de _TOTAL_ registros"
+
+                            },
+
+                        });
+
+                        $('#kt_table_1 tfoot th').each(function () {
+                            var title = $(this).text();
+                            $(this).html('<input type="text" style="width: 100%" />');
+                        });
+
+                        this.dt.columns().every(function () {
+                            var that = this;
+
+                            $('input', this.footer()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that
+                                        .search(this.value)
+                                        .draw();
+                                }
+                            });
+                        });
+
+                        $('#kt_table_1 tfoot tr').appendTo('#kt_table_1 thead');
+                    });
+
+                }
+            }
+        });
+
+    </script>
+}

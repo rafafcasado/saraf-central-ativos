@@ -1,0 +1,320 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutEmpresa.cshtml";
+}
+
+
+<style type="text/css">
+
+    .tree-view {
+        border-bottom: 1px dashed black;
+        padding-bottom: 5px;
+        padding-top: 10px;
+    }
+
+        .tree-view:hover {
+            background-color: lightblue;
+        }
+
+    .nivel-1 {
+        color: blue;
+    }
+
+    .nivel-2 {
+        color: purple;
+    }
+
+        .nivel-2 h4 {
+            padding-left: 30px;
+        }
+
+    .nivel-3 {
+        color: green;
+    }
+
+        .nivel-3 h4 {
+            padding-left: 60px;
+        }
+
+    .nivel-4 {
+        color: red;
+    }
+
+        .nivel-4 h4 {
+            padding-left: 90px;
+        }
+
+    .nivel-5 {
+        color: gray;
+    }
+
+        .nivel-5 h4 {
+            padding-left: 120px;
+        }
+
+    .nivel-6 {
+        color: salmon;
+    }
+
+        .nivel-6 h4 {
+            padding-left: 150px;
+        }
+
+    .nivel-7 {
+        color: orangered;
+    }
+
+        .nivel-7 h4 {
+            padding-left: 180px;
+        }
+
+    .nivel-8 {
+        color: darkgoldenrod;
+    }
+
+        .nivel-8 h4 {
+            padding-left: 210px;
+        }
+
+    .nivel-9 h4 {
+        padding-left: 240px;
+    }
+
+    .nivel-10 h4 {
+        padding-left: 270px;
+    }
+</style>
+
+
+<div id="locais-form">
+    <div class="kt-content  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet kt-portlet--mobile">
+            <div class="kt-portlet__head kt-portlet__head--lg">
+                <div class="kt-portlet__head-label">
+                    <span class="kt-portlet__head-icon">
+                        <i class="kt-font-brand flaticon2-line-chart"></i>
+                    </span>
+                    <h3 class="kt-portlet__head-title">
+                        Lista de Locais
+                    </h3>
+                </div>
+                <div class="kt-portlet__head-toolbar">
+                    <div class="kt-portlet__head-wrapper">
+                        <div class="kt-portlet__head-actions">
+                            <button data-toggle="modal" data-target="#modalCadastro" class="btn btn-brand btn-elevate btn-icon-sm">
+                                <i class="la la-plus"></i> Novo Local Principal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="kt-portlet__body">
+
+                <div id="kt_table_1_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+
+                    <div class="alert alert-info" v-if="locais.length === undefined">Não há nenhum Local Cadastrado</div>
+
+                    <local-item v-for="(l, index) in locais" :local="l" :index="index"></local-item>
+                    @*<div v-for="(local, index) in locais">
+                            <div class="row tree-view">
+                                <div class="col-1">
+                                    <button class="btn btn-xs btn-secondary btn-icon-sm" v-on:click="abrirNo(index)">&nbsp;<i class="la la-plus"></i></button>
+                                </div>
+                                <div class="col-9" v-bind:class="'nivel-' + (local.Prefixo == null ? 1 : local.Prefixo.split('.').length)"><h4>{{local.Nome}}</h4></div>
+                                <div class="col-2">
+                                    <button class="btn btn-xs btn-secondary btn-icon-sm" data-toggle="modal" data-target="#modalCadastro">&nbsp;<i class="la la-arrow-down"></i></button>
+                                    <button class="btn btn-xs btn-secondary btn-icon-sm">&nbsp;<i class="la la-pencil"></i></button>
+                                    <button class="btn btn-xs btn-secondary btn-icon-sm">&nbsp;<i class="la la-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>*@
+
+                </div>
+            </div>
+        </div>
+
+        <!--end::Portlet-->
+        <!--end::Portlet-->
+    </div>
+
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalCadastro">
+        <div class="modal-dialog modal-lg" role="document">
+            <form class="modal-content" v-on:submit.prevent="salvar">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastro de Local</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col-md-4 col-sm-12">
+                            <label>Código <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Código do Local" required v-model="local.Codigo">
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <label>Nome <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Nome do Local" required v-model="local.Nome">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6 col-sm-12">
+                            <label>Centro de Custo</label>
+                            <select class="form-control" v-model="local.CentroCustoID">
+                                <option value="null">- Centro de Custo não Atribuído -</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <label>Responsável</label>
+                            <select class="form-control" v-model="local.ResponsavelID">
+                                <option value="null">- Responsável não Atribuído -</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        Vue.component('local-item', {
+          name: 'local-item',
+          props: ['local', 'index'],
+          data: function () {
+            return {}
+            },
+
+            methods: {
+
+                abrirNo() {
+
+                    api.get('local/getSubLocaisByLocalID/' + this.local.ID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.local.locais = data;
+
+                        });
+                }
+            },
+
+            template: `
+                        <div class="row tree-view">
+                            <div class="col-1">
+                                <button class="btn btn-xs btn-secondary btn-icon-sm" v-on:click="abrirNo()">&nbsp;<i class="la la-plus"></i></button>
+                            </div>
+                            <div class="col-9" v-bind:class="'nivel-' + (local.Prefixo == null ? 1 : local.Prefixo.split('.').length)"><h4>{{local.Nome}}</h4></div>
+                            <div class="col-2">
+                                <button class="btn btn-xs btn-secondary btn-icon-sm" data-toggle="modal" data-target="#modalCadastro" v-on:click="incluirSub(local.Prefixo + local.CodigoInterno)">&nbsp;<i class="la la-arrow-down"></i></button>
+                                <button class="btn btn-xs btn-secondary btn-icon-sm">&nbsp;<i class="la la-pencil"></i></button>
+                                <button class="btn btn-xs btn-secondary btn-icon-sm">&nbsp;<i class="la la-trash"></i></button>
+                            </div>    
+                        </div>    
+                        <local-item v-for="(l, index) in local.locais" :local="l" :index="index"></local-item>
+                        `
+        })
+
+        new Vue({
+            el: '#locais-form',
+            data() {
+                return {
+                    filialID: 0,
+                    locais: {},
+                    local: {
+                        ID: 0,
+                        FilialID: 0,
+                        Codigo: '',
+                        Nome: '',
+                        CentroCustoID: null,
+                        ResponsavelID: null,
+                        Prefixo: null
+                    },
+                    errors: {}
+                };
+            },
+
+            methods: {
+
+                listar() {
+
+                    api.get('local/getPrincipaisByFilialID/' + this.filialID, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            this.locais = data;
+                        });
+
+                },
+
+                salvar() {
+
+                    const self = this;
+                    const { local } = this;
+
+                    let urlReq = config.baseURL + 'local';
+
+                    let metodo = 'post';
+
+                    if (local.ID != 0) {
+                        urlReq = urlReq + '/' + local.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (local)
+                    }).then(function () {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Local salvo com sucesso!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        $('#modalCadastro').modal('hide');
+                        self.listar();
+
+                    }).catch(function (erro) {
+                        alert(erro.response.data.Message);
+                    });
+                },
+
+
+            },
+
+            mounted: function () {
+
+                const id = this.getId();
+
+                if (id) {
+
+                    this.local.FilialID = id;
+                    this.filialID = id;
+                    this.listar();
+                }
+
+            }
+        });
+
+    </script>
+}

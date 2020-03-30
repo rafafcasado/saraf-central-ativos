@@ -1,0 +1,271 @@
+﻿@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- begin::Head -->
+
+<head>
+
+    <!--end::Base Path -->
+    <meta charset="utf-8" />
+    <title>Saraf</title>
+    <meta name="description" content="Login page example">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!--begin::Fonts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+    <script>
+        WebFont.load({
+            google: {
+                "families": ["Poppins:300,400,500,600,700", "Roboto:300,400,500,600,700"]
+            },
+            active: function () {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
+
+    <link href="~/Content/css/login-3.css" rel="stylesheet" />
+
+    <link href="~/Content/vendors/global/vendors.bundle.css" rel="stylesheet" />
+    <link href="~/Content/css/style.bundle.css" rel="stylesheet" />
+
+    <link href="~/Content/css/skins/header/base/light.css" rel="stylesheet" />
+    <link href="~/Content/css/skins/header/menu/light.css" rel="stylesheet" />
+    <link href="~/Content/css/skins/brand/dark.css" rel="stylesheet" />
+    <link href="~/Content/css/skins/aside/dark.css" rel="stylesheet" />
+
+    <link rel="icon" type="image/png" href="~/content/img/ico.png" />
+</head>
+
+<!-- end::Head -->
+<!-- begin::Body -->
+
+<body class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--fixed kt-subheader--enabled kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
+
+    <!-- begin:: Page -->
+    <div class="kt-grid kt-grid--ver kt-grid--root">
+        <div class="kt-grid kt-grid--hor kt-grid--root  kt-login kt-login--v3 kt-login--signin" id="primeiro-acesso-form">
+            <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" style="background-image: url('../Content/img/bg-3.jpg');">
+                <div class="kt-grid__item kt-grid__item--fluid kt-login__wrapper">
+                    <div class="kt-login__container">
+                        <div class="kt-login__logo">
+                            <a href="#">
+                                <img src="~/content/img/logo.png" style="width: 50%;">
+                            </a>
+                        </div>
+                        <div class="kt-login__signin">
+                            <div class="kt-login__head">
+                                <h3 class="kt-login__title">Primeiro Acesso</h3>
+                            </div>
+                            <form v-on:submit.prevent="primeiroAcesso" class="kt-form" novalidate>
+                                <div class="input-group">
+                                    <input class="form-control" type="email" placeholder="Email" autocomplete="off" v-model.trim="$v.email.$model" :class="{ 'is-invalid': invalido('email') }">
+                                </div>
+                                <div class="error invalid-feedback" v-if="erro('email', 'email')">Informe um email válido</div>
+                                <div class="error invalid-feedback" v-if="erro('email', 'required')">Email obrigatório</div>
+                                <div class="error invalid-feedback" v-if="errors.email">{{ errors.email }}</div>
+
+                                <div class="input-group">
+                                    <input class="form-control" type="password" placeholder="Senha" autocomplete="off" v-model.trim="$v.senha.$model" :class="{ 'is-invalid': invalido('senha') }">
+                                </div>
+                                <div class="error invalid-feedback" v-if="erro('senha', 'required')">Senha obrigatória</div>
+                                <div class="error invalid-feedback" v-if="erro('senha', 'minLength')">A senha deve ter ao menos {{$v.senha.$params.minLength.min}} caracteres</div>
+                                <div class="error invalid-feedback" v-if="erro('senha', 'sameAs')">Os campos Senha e Confirmação de Senha devem ser iguais</div>
+                                <div class="error invalid-feedback" v-if="errors.senha">{{ errors.senha }}</div>
+
+                                <div class="input-group">
+                                    <input class="form-control" type="password" placeholder="Confirme Senha" v-model.trim="$v.confirmacaoSenha.$model" :class="{ 'is-invalid': invalido('confirmacaoSenha') }">
+                                </div>
+                                <div class="error invalid-feedback" v-if="erro('confirmacaoSenha', 'required')">Confirmação de Senha obrigatória</div>
+                                <div class="error invalid-feedback" v-if="erro('confirmacaoSenha', 'minLength')">A Confirmação de Senha deve ter ao menos {{$v.confirmacaoSenha.$params.minLength.min}} caracteres</div>
+                                <div class="error invalid-feedback" v-if="erro('confirmacaoSenha', 'sameAs')">Os campos Senha e Confirmação de Senha devem ser iguais</div>
+                                <div class="error invalid-feedback" v-if="errors.confirmacaoSenha">{{ errors.senha }}</div>
+
+                                <div class="kt-login__actions">
+                                    <button type="submit" :disabled="$v.$invalid" class="btn btn-brand btn-elevate">Salvar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- fim -->
+            </div>
+        </div>
+    </div>
+
+    <!-- end:: Page -->
+    <!-- begin::Global Config(global config for global JS sciprts) -->
+    <script>
+        var KTAppOptions = {
+            "colors": {
+                "state": {
+                    "brand": "#5d78ff",
+                    "dark": "#282a3c",
+                    "light": "#ffffff",
+                    "primary": "#5867dd",
+                    "success": "#34bfa3",
+                    "info": "#36a3f7",
+                    "warning": "#ffb822",
+                    "danger": "#fd3995"
+                },
+                "base": {
+                    "label": ["#c5cbe3", "#a1a8c3", "#3d4465", "#3e4466"],
+                    "shape": ["#f0f3ff", "#d9dffa", "#afb4d4", "#646c9a"]
+                }
+            }
+        };
+    </script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="~/Content/vendors/global/vendors.bundle.js"></script>
+    <script src="~/Content/js/scripts.bundle.js"></script>
+    <environment exclude="Development">
+        <script src="~/content/vendors/vue/vue.min.js" type="text/javascript"></script>
+    </environment>
+    <script src="~/content/vendors/vue/vuelidate.min.js" type="text/javascript"></script>
+    <script src="~/content/vendors/vue/validators.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js"></script>
+    <script src="~/Content/js/common.js"></script>
+    <script type="text/javascript">
+
+        const { required, email, minLength, sameAs } = window.validators;
+
+        new Vue({
+            el: '#primeiro-acesso-form',
+            data() {
+                return {
+                    email: '',
+                    senha: '',
+                    confirmacaoSenha: '',
+                    errors: {},
+                };
+            },
+
+            validations: {
+                email: {
+                    required,
+                    email
+                },
+                senha: {
+                    required,
+                    minLength: minLength(4),
+                    sameAs: sameAs('confirmacaoSenha')
+                },
+                confirmacaoSenha: {
+                    required,
+                    minLength: minLength(4),
+                    sameAs: sameAs('senha')
+                }
+            },
+
+            methods: {
+
+                primeiroAcesso() {
+
+                    this.$v.$touch();
+
+                    if (this.$v.$invalid) {
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: 'Aguarde, por favor.',
+                        html: '<p>Estamos processando sua requisição</p>',
+                        onBeforeOpen: () => {
+
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const self = this;
+
+                    axios.request({
+                        url: config.baseURL + 'helpers/primeiroacesso',
+                        method: 'post',
+                        data: ({ email: self.email, senha: self.senha, confirmacaoSenha: self.confirmacaoSenha })
+                    }).then(function () {
+                        let timerInterval;
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Primeiro Acesso efetuado com sucesso',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                self.login();
+                            }
+                        });
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+
+                },
+
+                login() {
+
+                    const { email, senha } = this;  //campos
+
+                    var reqData = "grant_type=password&username=" + email + "&password=" + senha;
+
+                    axios.request({
+                        url: config.baseURL + "token",
+                        method: 'post',
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        data: (reqData)
+                    }).then(function (res) {
+
+                        window.localStorage.setItem('token', JSON.stringify(res.data.access_token));
+
+                        api.get('helpers/getUsuarioLogado', true)
+                            .then(({ data, errors }) => {
+                                this.errors = errors || {};
+                                if (errors) {
+                                    return;
+                                }
+
+                                window.localStorage.userName = data.Nome;
+
+                                if (data.EmpresaID) {
+                                    window.localStorage.setItem('empresaID', data.EmpresaID);
+                                    window.localStorage.setItem('empresaNome', data.Empresa.NomeFantasia);
+                                }
+
+                                if (data.PerfilID === 1) //Administrador
+                                    window.location.href = config.baseURLWeb + '/';
+                                else
+                                    window.location.href = config.baseURLWeb + '/Home/Dashboard';
+                            });
+
+                    });
+
+                }
+            },
+            mounted() {
+
+                localStorage.clear();
+            }
+
+        });
+
+    </script>
+
+    <!--end::Page Scripts -->
+</body>
+
+<!-- end::Body -->
+
+</html>

@@ -1,0 +1,413 @@
+﻿<div class="kt-portlet">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <span class="kt-portlet__head-icon">
+                <i class="kt-font-brand fa fa-building"></i>
+            </span>
+            <h3 class="kt-portlet__head-title">
+                Cadastro de Empresas
+            </h3>
+        </div>
+    </div>
+
+    <!--begin::Form-->
+    <form class="kt-form" id="empresa-form" v-on:submit.prevent="salvar">
+        <div class="kt-portlet__body">
+            <div class="card">
+                <div class="card-header">
+                    Logo da Empresa
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-2">
+                            <img id="imgLogo" v-bind:src="empresa.Logo" style="width: 100%; border: 1px solid lightgray;" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <input id="uploadLogo" class="form-control" type="file" style="border: none;" v-on:change="lerImagem" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="card">
+                <div class="card-header">
+                    Dados Principais
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-md-4 col-sm-12">
+                            <label>Nome Fantasia <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Nome Fantasia" required v-model="empresa.NomeFantasia">
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <label>Razão Social <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com a Razão Social" required v-model="empresa.RazaoSocial">
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <label>CNPJ <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input name="cnpj" type="text" class="form-control" placeholder="Entre com o CNPJ" required v-model="empresa.CNPJ" v-mask="'##.###.###/####-##'" v-on:blur="verificaCNPJ">
+                        </div>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="chkPermite" v-model="empresa.PermiteCodigosIguais">
+                        <label class="form-check-label" for="chkPermite">
+                            Permitir códigos iguais em filiais diferentes
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="card">
+                <div class="card-header">
+                    Endereço
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-md-4 col-sm-12">
+                            <label>CEP <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o CEP" required v-model="empresa.CEP" v-mask="'#####-###'" v-on:blur="buscarCEP">
+                        </div>
+                        <div class="col-md-10 col-sm-12">
+                            <label>Endereço <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Endereço" required v-model="empresa.Endereco">
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label>Número</label>
+                            <input type="number" class="form-control" placeholder="Número" v-model="empresa.Numero">
+                        </div>
+                        <div class="col-md-3 col-sm-12">
+                            <label>Complemento</label>
+                            <input type="text" class="form-control" placeholder="Entre com o Complemento" v-model="empresa.Complemento">
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <label>Bairro <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com o Bairro" v-model="empresa.Bairro">
+                        </div>
+                        <div class="col-md-3 col-sm-12">
+                            <label>Cidade <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <input type="text" class="form-control" placeholder="Entre com a Cidade" v-model="empresa.Cidade">
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label>UF <small class="invalid-feedback">(Obrigatório)</small></label>
+                            <select class="form-control" v-model="empresa.UF">
+                                <option value="AC">AC</option>
+                                <option value="AL">AL</option>
+                                <option value="AP">AP</option>
+                                <option value="AM">AM</option>
+                                <option value="BA">BA</option>
+                                <option value="CE">CE</option>
+                                <option value="DF">DF</option>
+                                <option value="ES">ES</option>
+                                <option value="GO">GO</option>
+                                <option value="MA">MA</option>
+                                <option value="MT">MT</option>
+                                <option value="MS">MS</option>
+                                <option value="MG">MG</option>
+                                <option value="PA">PA</option>
+                                <option value="PB">PB</option>
+                                <option value="PR">PR</option>
+                                <option value="PE">PE</option>
+                                <option value="PI">PI</option>
+                                <option value="RJ">RJ</option>
+                                <option value="RN">RN</option>
+                                <option value="RS">RS</option>
+                                <option value="RO">RO</option>
+                                <option value="RR">RR</option>
+                                <option value="SC">SC</option>
+                                <option value="SP">SP</option>
+                                <option value="SE">SE</option>
+                                <option value="TO">TO</option>
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="card" v-if="empresa.ID == 0">
+                <div class="card-header">
+                    Deseja Copiar a Estrutura de Outra Empresa?
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <label>Selecione a Empresa que deseja Copiar</label>
+                            <select class="form-control" v-model="empresa.CopiarDe">
+                                <option value="0">- Selecione a Empresa -</option>
+                                <option v-bind:value="empresa.ID" v-for="empresa in empresas">{{empresa.NomeFantasia}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <fieldset>
+                        <legend>Quais entidades deseja copiar?</legend>
+                        <hr />
+                        <div class="form-group row">
+                            <div class="col-md-2 col-sm-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="chkGrupo" data-entidade="grupo" name="chkEntidades">
+                                    <label class="form-check-label" for="chkGrupo">
+                                        Grupos
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="chkEspecie" data-entidade="especie" name="chkEntidades">
+                                    <label class="form-check-label" for="chkEspecie">
+                                        Espécies
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="chkPropriedades" data-entidade="propriedade" name="chkEntidades">
+                                    <label class="form-check-label" for="chkPropriedades">
+                                        Propriedades
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="chkCentrosCusto" data-entidade="centroCusto" name="chkEntidades">
+                                    <label class="form-check-label" for="chkCentrosCusto">
+                                        Centros de Custo
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="chkContasContabeis" data-entidade="contaContabil" name="chkEntidades">
+                                    <label class="form-check-label" for="chkContasContabeis">
+                                        Contas Contábeis
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+            </div>
+
+            <div class="kt-portlet__foot">
+                <div class="kt-form__actions">
+                    <button type="button" class="btn btn-danger" onclick="history.go(-1)">Voltar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+
+    </form>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#empresa-form',
+            data() {
+                return {
+                    empresa: {
+                        ID: 0,
+                        NomeFantasia: '',
+                        RazaoSocial: '',
+                        CNPJ: '',
+                        CEP: '',
+                        Endereco: '',
+                        Numero: '',
+                        Complemento: '',
+                        Bairro: '',
+                        Cidade: '',
+                        UF: 'AC',
+                        CopiarDe: 0,
+                        CopiarEntidades: [],
+                        Logo: '',
+                        PermiteCodigosIguais: false
+                    },
+                    empresas: [],
+                    errors: {}
+                };
+            },
+
+            methods: {
+
+                listarEmpresas() {
+
+                    api.get('empresa/getEmpresas', true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.empresas = data;
+                        });
+
+                },
+
+                salvar() {
+
+                    const { empresa } = this;
+
+                    if (empresa.CopiarDe != 0) {
+
+                        $('input[name=chkEntidades]').each(function () {
+
+                            if ($(this).is(':checked'))
+                                empresa.CopiarEntidades.push($(this).data('entidade'));
+                        });
+                    }
+
+                    let urlReq = config.baseURL + 'empresa';
+
+                    let metodo = 'post';
+
+                    if (empresa.ID) {
+                        urlReq = urlReq + '/' + empresa.ID;
+                        metodo = 'put';
+                    }
+
+                    axios.request({
+                        url: urlReq,
+                        method: metodo,
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (empresa)
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Empresa salva com sucesso',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/empresa';
+                            }
+                        });
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                },
+
+                editar(id) {
+
+                    api.get('empresa/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+                            this.empresa = data;
+                        });
+                },
+
+                buscarCEP() {
+
+                    const self = this;
+
+                    axios.request({
+                        url: 'https://viacep.com.br/ws/' + self.empresa.CEP.replace('-', '') + '/json/',
+                        method: 'get'
+                    }).then(function (resp) {
+                        if (resp.data) {
+
+                            self.empresa.Endereco = resp.data.logradouro;
+                            self.empresa.Bairro = resp.data.bairro;
+                            self.empresa.Cidade = resp.data.localidade;
+                            self.empresa.UF = resp.data.uf;
+                        }
+                    });
+
+                },
+
+                lerImagem() {
+
+                    let self = this;
+
+                    if (document.getElementById('uploadLogo').files && document.getElementById('uploadLogo').files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+
+                            self.empresa.Logo = e.target.result;
+                        };
+                        reader.readAsDataURL(document.getElementById('uploadLogo').files[0]);
+                    }
+                    else {
+                        var img = document.getElementById('uploadLogo').value;
+                        self.empresa.Logo = document.getElementById('uploadLogo').value;
+                    }
+                },
+
+                verificaCNPJ() {
+
+                    if (this.empresa.CNPJ.length > 0 && !this.validaCNPJ(this.empresa.CNPJ)) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: 'CNPJ Inválido. Favor Verificar',
+                            onClose: () => {
+
+                                $('input[name=cnpj]').focus();
+                            }
+                        });
+                    }
+                }
+            },
+
+            created: function () {
+                const id = this.getId();
+
+                if (id) {
+                    this.editar(id);
+                }
+                else
+                    this.listarEmpresas();
+
+                api.get('permissao/getByFuncionalidade/empresa', true)
+                    .then(({ data, errors }) => {
+                        this.errors = errors || {};
+                        if (errors) {
+                            return;
+                        }
+
+                        if ((id && data.indexOf('PUT') < 0) || !id && data.indexOf('POST') < 0) {
+
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Acesso Negado',
+                                html: 'Você não tem acesso à essa funcionalidade.</br>Entre em contato com o Administrador do Sistema',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                onClose: () => {
+
+                                    history.go('-1');
+                                }
+                            });
+                        }
+
+                    });
+            }
+        });
+
+        $(document).ready(function () {
+
+            $('#chkEspecie').click(function () {
+
+                if ($(this).is(':checked') && !$('#chkGrupo').is(':checked')) {
+                    $('#chkGrupo').prop('checked', true);
+                }
+            });
+        });
+
+
+    </script>
+}

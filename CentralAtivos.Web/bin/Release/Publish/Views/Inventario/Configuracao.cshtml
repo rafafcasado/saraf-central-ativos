@@ -1,0 +1,152 @@
+﻿
+@{
+    ViewBag.Title = "Configuracao";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" />
+
+
+<div class="kt-portlet" id="inventario-config">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">
+                Configuração de Inventário
+            </h3>
+        </div>
+    </div>
+    <form class="kt-portlet__body" v-on:submit.prevent="salvar">
+
+        <h4>Aplicar Máscara?</h4>
+        <div class="row mt-3">
+            <input id="aplicarMascara" class="form-control" data-switch="true" data-off-color="danger" data-on-text="aplicar" data-off-text="não aplicar" type="checkbox" v-bind:checked="inventario.AplicarMascara" name="switch">
+        </div>
+        <div class="row mt-3">
+            <input id="mascaraNomeItem" type="text" class="form-control" placeholder="Máscara do Item" v-bind:disabled="!inventario.AplicarMascara" v-model="inventario.MascaraNomeItem" v-bind:required="inventario.AplicarMascara" />
+        </div>
+        <br /><br />
+        <h4>Configuração dos Campos</h4>
+        <br />
+        <div class="row border-bottom pb-2 pt-3" v-for="config in inventario.Configs">
+            <div class="col-3">{{config.Entidade}}.{{config.NomeCampo}}</div>
+            <div class="col-5"><input class="form-control" v-bind:data-configid="config.ID" data-switch="true" data-off-color="danger" data-on-text="obrigatório" data-off-text="não obrigatório" type="checkbox" v-bind:checked="config.Obrigatorio" name="obrigatorio"></div>
+            <div class="col-4"><input class="form-control" v-bind:data-configid="config.ID" data-switch="true" data-off-color="danger" data-on-text="visível" data-off-text="invisível" type="checkbox" v-bind:checked="config.Visivel" name="visivel"></div>
+        </div>
+        <div class="row pt-5">
+            <button type="button" class="btn btn-danger mr-3" onclick="history.go(-1)">Voltar</button>
+            <button type="submit" class="btn btn-success">Salvar</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#inventario-config',
+            data() {
+                return {
+                    errors: {},
+                    inventario: {},
+                    permissao: ''
+                };
+            },
+
+            methods: {
+
+                carregarInventario(id) {
+
+                    let self = this;
+
+                    api.get('inventario/' + id, true)
+                        .then(({ data, errors }) => {
+                            this.errors = errors || {};
+                            if (errors) {
+                                return;
+                            }
+
+                            self.inventario = data;
+
+                            window.setTimeout(self.carregarSwitches, 500);
+
+                        });
+                },
+
+                carregarSwitches() {
+
+                    let self = this;
+
+                    $("#aplicarMascara").bootstrapSwitch();
+                    $("[name=obrigatorio]").bootstrapSwitch();
+                    $("[name=visivel]").bootstrapSwitch();
+
+                    $('#aplicarMascara').on('switchChange.bootstrapSwitch', function (event, state) {
+
+                        self.inventario.AplicarMascara = state;
+                    });
+
+                    $('[name=obrigatorio]').on('switchChange.bootstrapSwitch', function (event, state) {
+
+                        var campo = self.inventario.Configs.filter(x => { return x.ID == $(this).data('configid') })[0];
+
+                        campo.Obrigatorio = state;
+                    });
+
+                    $('[name=visivel]').on('switchChange.bootstrapSwitch', function (event, state) {
+
+                        var campo = self.inventario.Configs.filter(x => { return x.ID == $(this).data('configid') })[0];
+
+                        campo.Visivel = state;
+                    });
+                },
+
+                salvar() {
+
+                    axios.request({
+                        url: config.baseURL + 'inventario/' + this.inventario.ID,
+                        method: 'put',
+                        headers: {
+                            "Authorization": "Bearer " + JSON.parse(window.localStorage.getItem('token'))
+                        },
+                        data: (this.inventario)
+                    }).then(function () {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Parabéns',
+                            text: 'Configurações salvas com sucesso',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            onClose: () => {
+                                clearInterval(timerInterval);
+                                window.location.href = config.baseURLWeb + '/inventario';
+                            }
+                        });
+
+                    }).catch(function (erro) {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: erro.response.data.Message
+                        });
+                    });
+                }
+            },
+            mounted() {
+
+                let self = this;
+
+                const id = self.getId();
+
+                if (id)
+                    self.carregarInventario(id);
+
+            }
+        });
+
+    </script>
+}

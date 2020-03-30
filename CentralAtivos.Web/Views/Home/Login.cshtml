@@ -1,0 +1,123 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login - Saraf</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+    <script>
+        WebFont.load({
+            google: {
+                "families": ["Poppins:300,400,500,600,700", "Roboto:300,400,500,600,700"]
+            },
+            active: function () {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
+    <link href="~/content/vendors/global/vendors.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/content/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/content/css/skins/header/base/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/content/css/skins/header/menu/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/content/css/skins/brand/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/content/css/skins/aside/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/content/css/login.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/png" href="~/content/img/ico.png" />
+</head>
+
+<body class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--fixed kt-subheader--enabled kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
+    <div class="kt-grid kt-grid--ver kt-grid--root" id="login-form">
+        <div class="kt-grid kt-grid--hor kt-grid--root  kt-login kt-login--v1" id="kt_login">
+            <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--desktop kt-grid--ver-desktop kt-grid--hor-tablet-and-mobile">
+                <div class="kt-grid__item kt-grid__item--order-tablet-and-mobile-2 kt-grid kt-grid--hor kt-login__aside" style="background: url(../../Content/img/business.jpg) no-repeat top left fixed;background-size:cover;">
+                    <div class="kt-grid__item">
+                        <a href="#" class="kt-login__logo">
+                            <img src="~/content/img/logo.png" style="width: 70%;">
+                        </a>
+                    </div>
+                    <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver">
+                        <div class="kt-grid__item kt-grid__item--middle">
+                        </div>
+                    </div>
+                    <div class="kt-grid__item">
+                        <div class="kt-login__info">
+                            <div class="kt-login__copyright">
+                                &copy; Saraf - Todos os direitos reservados
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kt-grid__item kt-grid__item--fluid  kt-grid__item--order-tablet-and-mobile-1 kt-login__wrapper" style="height: 100vh;">
+                    <div class="kt-login__body">
+                        <div class="kt-login__form">
+                            <div class="kt-login__title">
+                                <h3>ENTRAR</h3>
+                            </div>
+                            <form v-on:submit.prevent="login" class="kt-form" novalidate>
+                                <div class="form-group">
+                                    <input class="form-control" type="text" placeholder="Email" name="email" autocomplete="off" v-model.trim="$v.email.$model" :class="{ 'is-invalid': invalido('email') }">
+                                </div>
+                                <div class="error invalid-feedback" v-if="erro('email', 'email')">Informe um email válido</div>
+                                <div class="error invalid-feedback" v-if="erro('email', 'required')">Email obrigatório</div>
+                                <div class="error invalid-feedback" v-if="errors.email">{{ errors.email }}</div>
+
+                                <div class="form-group">
+                                    <input class="form-control" type="password" placeholder="Senha" name="senha" autocomplete="off" v-model.trim="$v.senha.$model" :class="{ 'is-invalid': invalido('senha') }">
+                                </div>
+                                <div class="error invalid-feedback" v-if="erro('senha', 'required')">Senha obrigatória</div>
+                                <div class="error invalid-feedback" v-if="erro('senha', 'minLength')">A senha deve ter ao menos {{$v.senha.$params.minLength.min}} caracteres</div>
+                                <div class="error invalid-feedback" v-if="errors.senha">{{ errors.senha }}</div>
+
+                                <div class="kt-login__actions">
+                                    <a href="~/home/primeiroacesso" class="kt-link kt-login__link-forgot">
+                                        Primeiro Acesso?
+                                    </a>
+                                    <a href="~/home/esquecisenha" class="kt-link kt-login__link-forgot">
+                                        Esqueci Minha Senha
+                                    </a>
+                                    <button type="submit" :disabled="$v.$invalid" class="btn btn-primary btn-elevate kt-login__btn-primary"> Entrar </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-redefinir" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h4>Digite seu e-mail para redefinir a senha</h4>
+                    <div class="form-group mt-5">
+                        <input class="form-control" type="text" placeholder="email@teste.com.br">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Redefinir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="~/content/vendors/global/vendors.bundle.js" type="text/javascript"></script>
+    <script src="~/content/js/scripts.bundle.js" type="text/javascript"></script>
+    <environment include="Development">
+        <script src="~/content/vendors/vue/vue.js" type="text/javascript"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/content/vendors/vue/vue.min.js" type="text/javascript"></script>
+    </environment>
+    <script src="~/content/vendors/vue/vuelidate.min.js" type="text/javascript"></script>
+    <script src="~/content/vendors/vue/validators.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js"></script>
+    <script src="~/content/js/common.js" type="text/javascript" asp-append-version="true"></script>
+    <script src="~/content/js/login.js" type="text/javascript" asp-append-version="true"></script>
+</body>
+</html>

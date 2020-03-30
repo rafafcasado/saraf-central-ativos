@@ -1,0 +1,1260 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CentralAtivos.API</name>
+    </assembly>
+    <members>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.ApiDescriptionExtensions.GetFriendlyId(System.Web.Http.Description.ApiDescription)">
+            <summary>
+            Generates an URI-friendly ID for the <see cref="T:System.Web.Http.Description.ApiDescription"/>. E.g. "Get-Values-id_name" instead of "GetValues/{id}?name={name}"
+            </summary>
+            <param name="description">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <returns>The ID as a string.</returns>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.HelpPageConfig">
+            <summary>
+            Use this class to customize the Help Page.
+            For example you can set a custom <see cref="T:System.Web.Http.Description.IDocumentationProvider"/> to supply the documentation
+            or you can provide the samples for the requests/responses.
+            </summary>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.Controllers.HelpController">
+            <summary>
+            The controller that will handle requests for the help page.
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetDocumentationProvider(System.Web.Http.HttpConfiguration,System.Web.Http.Description.IDocumentationProvider)">
+            <summary>
+            Sets the documentation provider for help page.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="documentationProvider">The documentation provider.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleObjects(System.Web.Http.HttpConfiguration,System.Collections.Generic.IDictionary{System.Type,System.Object})">
+            <summary>
+            Sets the objects that will be used by the formatters to produce sample requests/responses.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sampleObjects">The sample objects.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleRequest(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.String,System.String)">
+            <summary>
+            Sets the sample request directly for the specified media type and action.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample request.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleRequest(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.String,System.String,System.String[])">
+            <summary>
+            Sets the sample request directly for the specified media type and action with parameters.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample request.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleResponse(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.String,System.String)">
+            <summary>
+            Sets the sample request directly for the specified media type of the action.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample response.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleResponse(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.String,System.String,System.String[])">
+            <summary>
+            Sets the sample response directly for the specified media type of the action with specific parameters.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample response.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleForMediaType(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Sets the sample directly for all actions with the specified media type.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample.</param>
+            <param name="mediaType">The media type.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleForType(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.Type)">
+            <summary>
+            Sets the sample directly for all actions with the specified type and media type.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="type">The parameter type or return type of an action.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualRequestType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String)">
+            <summary>
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            The help page will use this information to produce more accurate request samples.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="type">The type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualRequestType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String,System.String[])">
+            <summary>
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            The help page will use this information to produce more accurate request samples.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="type">The type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualResponseType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String)">
+            <summary>
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> returned as part of the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            The help page will use this information to produce more accurate response samples.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="type">The type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualResponseType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String,System.String[])">
+            <summary>
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> returned as part of the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            The help page will use this information to produce more accurate response samples.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="type">The type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.GetHelpPageSampleGenerator(System.Web.Http.HttpConfiguration)">
+            <summary>
+            Gets the help page sample generator.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <returns>The help page sample generator.</returns>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.SetHelpPageSampleGenerator(System.Web.Http.HttpConfiguration,CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator)">
+            <summary>
+            Sets the help page sample generator.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sampleGenerator">The help page sample generator.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.GetModelDescriptionGenerator(System.Web.Http.HttpConfiguration)">
+            <summary>
+            Gets the model description generator.
+            </summary>
+            <param name="config">The configuration.</param>
+            <returns>The <see cref="T:CentralAtivos.API.Areas.HelpPage.ModelDescriptions.ModelDescriptionGenerator"/></returns>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageConfigurationExtensions.GetHelpPageApiModel(System.Web.Http.HttpConfiguration,System.String)">
+            <summary>
+            Gets the model that represents an API displayed on the help page. The model is initialized on the first call and cached for subsequent calls.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="apiDescriptionId">The <see cref="T:System.Web.Http.Description.ApiDescription"/> ID.</param>
+            <returns>
+            An <see cref="T:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel"/>
+            </returns>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.ModelDescriptions.ModelDescription">
+            <summary>
+            Describes a type model.
+            </summary>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.ModelDescriptions.ModelDescriptionGenerator">
+            <summary>
+            Generates model descriptions for given types.
+            </summary>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.ModelDescriptions.ModelNameAttribute">
+            <summary>
+            Use this attribute to change the name of the <see cref="T:CentralAtivos.API.Areas.HelpPage.ModelDescriptions.ModelDescription"/> generated for a type.
+            </summary>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel">
+            <summary>
+            The model that represents an API displayed on the help page.
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel"/> class.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.ApiDescription">
+            <summary>
+            Gets or sets the <see cref="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.ApiDescription"/> that describes the API.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.UriParameters">
+            <summary>
+            Gets or sets the <see cref="T:CentralAtivos.API.Areas.HelpPage.ModelDescriptions.ParameterDescription"/> collection that describes the URI parameters for the API.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.RequestDocumentation">
+            <summary>
+            Gets or sets the documentation for the request.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.RequestModelDescription">
+            <summary>
+            Gets or sets the <see cref="T:CentralAtivos.API.Areas.HelpPage.ModelDescriptions.ModelDescription"/> that describes the request body.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.RequestBodyParameters">
+            <summary>
+            Gets the request body parameter descriptions.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.ResourceDescription">
+            <summary>
+            Gets or sets the <see cref="T:CentralAtivos.API.Areas.HelpPage.ModelDescriptions.ModelDescription"/> that describes the resource.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.ResourceProperties">
+            <summary>
+            Gets the resource property descriptions.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.SampleRequests">
+            <summary>
+            Gets the sample requests associated with the API.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.SampleResponses">
+            <summary>
+            Gets the sample responses associated with the API.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.Models.HelpPageApiModel.ErrorMessages">
+            <summary>
+            Gets the error messages associated with this model.
+            </summary>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator">
+            <summary>
+            This class will generate the samples for the help page.
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator"/> class.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.ActualHttpMessageTypes">
+            <summary>
+            Gets CLR types that are used as the content of <see cref="T:System.Net.Http.HttpRequestMessage"/> or <see cref="T:System.Net.Http.HttpResponseMessage"/>.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.ActionSamples">
+            <summary>
+            Gets the objects that are used directly as samples for certain actions.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.SampleObjects">
+            <summary>
+            Gets the objects that are serialized as samples by the supported formatters.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.SampleObjectFactories">
+            <summary>
+            Gets factories for the objects that the supported formatters will serialize as samples. Processed in order,
+            stopping when the factory successfully returns a non-<see langref="null"/> object.
+            </summary>
+            <remarks>
+            Collection includes just <see cref="M:CentralAtivos.API.Areas.HelpPage.ObjectGenerator.GenerateObject(System.Type)"/> initially. Use
+            <code>SampleObjectFactories.Insert(0, func)</code> to provide an override and
+            <code>SampleObjectFactories.Add(func)</code> to provide a fallback.</remarks>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.GetSampleRequests(System.Web.Http.Description.ApiDescription)">
+            <summary>
+            Gets the request body samples for a given <see cref="T:System.Web.Http.Description.ApiDescription"/>.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <returns>The samples keyed by media type.</returns>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.GetSampleResponses(System.Web.Http.Description.ApiDescription)">
+            <summary>
+            Gets the response body samples for a given <see cref="T:System.Web.Http.Description.ApiDescription"/>.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <returns>The samples keyed by media type.</returns>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.GetSample(System.Web.Http.Description.ApiDescription,CentralAtivos.API.Areas.HelpPage.SampleDirection)">
+            <summary>
+            Gets the request or response body samples.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <param name="sampleDirection">The value indicating whether the sample is for a request or for a response.</param>
+            <returns>The samples keyed by media type.</returns>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.GetActionSample(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.Type,System.Net.Http.Formatting.MediaTypeFormatter,System.Net.Http.Headers.MediaTypeHeaderValue,CentralAtivos.API.Areas.HelpPage.SampleDirection)">
+            <summary>
+            Search for samples that are provided directly through <see cref="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.ActionSamples"/>.
+            </summary>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+            <param name="type">The CLR type.</param>
+            <param name="formatter">The formatter.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="sampleDirection">The value indicating whether the sample is for a request or for a response.</param>
+            <returns>The sample that matches the parameters.</returns>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.GetSampleObject(System.Type)">
+            <summary>
+            Gets the sample object that will be serialized by the formatters. 
+            First, it will look at the <see cref="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.SampleObjects"/>. If no sample object is found, it will try to create
+            one using <see cref="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.DefaultSampleObjectFactory(CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator,System.Type)"/> (which wraps an <see cref="T:CentralAtivos.API.Areas.HelpPage.ObjectGenerator"/>) and other
+            factories in <see cref="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.SampleObjectFactories"/>.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>The sample object.</returns>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.ResolveHttpRequestMessageType(System.Web.Http.Description.ApiDescription)">
+            <summary>
+            Resolves the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <returns>The type.</returns>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.ResolveType(System.Web.Http.Description.ApiDescription,System.String,System.String,System.Collections.Generic.IEnumerable{System.String},CentralAtivos.API.Areas.HelpPage.SampleDirection,System.Collections.ObjectModel.Collection{System.Net.Http.Formatting.MediaTypeFormatter}@)">
+            <summary>
+            Resolves the type of the action parameter or return value when <see cref="T:System.Net.Http.HttpRequestMessage"/> or <see cref="T:System.Net.Http.HttpResponseMessage"/> is used.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+            <param name="sampleDirection">The value indicating whether the sample is for a request or a response.</param>
+            <param name="formatters">The formatters.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleGenerator.WriteSampleObjectUsingFormatter(System.Net.Http.Formatting.MediaTypeFormatter,System.Object,System.Type,System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Writes the sample object using formatter.
+            </summary>
+            <param name="formatter">The formatter.</param>
+            <param name="value">The value.</param>
+            <param name="type">The type.</param>
+            <param name="mediaType">Type of the media.</param>
+            <returns></returns>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey">
+            <summary>
+            This is used to identify the place where the sample should be applied.
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.#ctor(System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Creates a new <see cref="T:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey"/> based on media type.
+            </summary>
+            <param name="mediaType">The media type.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.#ctor(System.Net.Http.Headers.MediaTypeHeaderValue,System.Type)">
+            <summary>
+            Creates a new <see cref="T:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey"/> based on media type and CLR type.
+            </summary>
+            <param name="mediaType">The media type.</param>
+            <param name="type">The CLR type.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.#ctor(CentralAtivos.API.Areas.HelpPage.SampleDirection,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new <see cref="T:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey"/> based on <see cref="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>, controller name, action name and parameter names.
+            </summary>
+            <param name="sampleDirection">The <see cref="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.#ctor(System.Net.Http.Headers.MediaTypeHeaderValue,CentralAtivos.API.Areas.HelpPage.SampleDirection,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new <see cref="T:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey"/> based on media type, <see cref="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>, controller name, action name and parameter names.
+            </summary>
+            <param name="mediaType">The media type.</param>
+            <param name="sampleDirection">The <see cref="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.ControllerName">
+            <summary>
+            Gets the name of the controller.
+            </summary>
+            <value>
+            The name of the controller.
+            </value>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.ActionName">
+            <summary>
+            Gets the name of the action.
+            </summary>
+            <value>
+            The name of the action.
+            </value>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.MediaType">
+            <summary>
+            Gets the media type.
+            </summary>
+            <value>
+            The media type.
+            </value>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.ParameterNames">
+            <summary>
+            Gets the parameter names.
+            </summary>
+        </member>
+        <member name="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.SampleDirection">
+            <summary>
+            Gets the <see cref="P:CentralAtivos.API.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>.
+            </summary>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.ImageSample">
+            <summary>
+            This represents an image sample on the help page. There's a display template named ImageSample associated with this class.
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.ImageSample.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:CentralAtivos.API.Areas.HelpPage.ImageSample"/> class.
+            </summary>
+            <param name="src">The URL of an image.</param>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.InvalidSample">
+            <summary>
+            This represents an invalid sample on the help page. There's a display template named InvalidSample associated with this class.
+            </summary>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.ObjectGenerator">
+            <summary>
+            This class will create an object of a given type and populate it with sample data.
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.ObjectGenerator.GenerateObject(System.Type)">
+            <summary>
+            Generates an object for a given type. The type needs to be public, have a public default constructor and settable public properties/fields. Currently it supports the following types:
+            Simple types: <see cref="T:System.Int32"/>, <see cref="T:System.String"/>, <see cref="T:System.Enum"/>, <see cref="T:System.DateTime"/>, <see cref="T:System.Uri"/>, etc.
+            Complex types: POCO types.
+            Nullables: <see cref="T:System.Nullable`1"/>.
+            Arrays: arrays of simple types or complex types.
+            Key value pairs: <see cref="T:System.Collections.Generic.KeyValuePair`2"/>
+            Tuples: <see cref="T:System.Tuple`1"/>, <see cref="T:System.Tuple`2"/>, etc
+            Dictionaries: <see cref="T:System.Collections.Generic.IDictionary`2"/> or anything deriving from <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            Collections: <see cref="T:System.Collections.Generic.IList`1"/>, <see cref="T:System.Collections.Generic.IEnumerable`1"/>, <see cref="T:System.Collections.Generic.ICollection`1"/>, <see cref="T:System.Collections.IList"/>, <see cref="T:System.Collections.IEnumerable"/>, <see cref="T:System.Collections.ICollection"/> or anything deriving from <see cref="T:System.Collections.Generic.ICollection`1"/> or <see cref="T:System.Collections.IList"/>.
+            Queryables: <see cref="T:System.Linq.IQueryable"/>, <see cref="T:System.Linq.IQueryable`1"/>.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>An object of the given type.</returns>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.SampleDirection">
+            <summary>
+            Indicates whether the sample is used for request or response
+            </summary>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.TextSample">
+            <summary>
+            This represents a preformatted text sample on the help page. There's a display template named TextSample associated with this class.
+            </summary>
+        </member>
+        <member name="T:CentralAtivos.API.Areas.HelpPage.XmlDocumentationProvider">
+            <summary>
+            A custom <see cref="T:System.Web.Http.Description.IDocumentationProvider"/> that reads the API documentation from an XML documentation file.
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Areas.HelpPage.XmlDocumentationProvider.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:CentralAtivos.API.Areas.HelpPage.XmlDocumentationProvider"/> class.
+            </summary>
+            <param name="documentPath">The physical path to XML document.</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ContaContabilController.GetPrincipaisByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista das Principais Contas Contábeis Ativas Cadastrados para uma Empresa de acordo com o ID informado
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ContaContabilController.GetSubContasByContaID(System.Int32)">
+            <summary>
+            Retorna Lista das Sub Contas Contáveis Ativas Cadastradas para uma Conta Contábil de acordo com o ID informado
+            </summary>
+            <param name="contaContabilID">ID da Conta Contábil</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ContaContabilController.GetAll(System.Int32)">
+            <summary>
+            Retorna Todas as Contas Contábeis de acordo com o ID da Empresa informada
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ContaContabilController.Get(System.Int32)">
+            <summary>
+            Retorna Conta Contábil relacionada ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ContaContabilController.Post(CentralAtivos.Domain.Entities.ContaContabil)">
+            <summary>
+            Inclui uma Conta Contábil
+            </summary>
+            <param name="contaContabil">Objeto do tipo ContaContabil</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ContaContabilController.Put(System.Int32,CentralAtivos.Domain.Entities.ContaContabil)">
+            <summary>
+            Atualiza os dados de uma Conta Contábil
+            </summary>
+            <param name="contaContabil">Objeto do tipo ContaContabil</param>
+            <param name="id">ID da Conta Contábil que será atualizado</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ContaContabilController.Delete(System.Int32)">
+            <summary>
+            Exclui uma Conta Contábil
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.CentroCustoController.GetPrincipaisByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista dos Principais Centros de Custo Ativos Cadastrados para uma Empresa de acordo com o ID informado
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.CentroCustoController.GetSubCentrosByCentroID(System.Int32)">
+            <summary>
+            Retorna Lista dos Sub Centros de Custo Ativos Cadastrados para um Centro de Custo de acordo com o ID informado
+            </summary>
+            <param name="centroCustoID">ID do Centro de Custo</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.CentroCustoController.GetAllByEmpresaID(System.Int32)">
+            <summary>
+            Retorna todos os Centros de Custo de acordo com o ID da Empresa informada
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.CentroCustoController.Get(System.Int32)">
+            <summary>
+            Retorna Centro de Custo relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.CentroCustoController.Post(CentralAtivos.Domain.Entities.CentroCusto)">
+            <summary>
+            Inclui um Centro de Custo
+            </summary>
+            <param name="centroCusto">Objeto do tipo CentroCusto</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.CentroCustoController.Put(System.Int32,CentralAtivos.Domain.Entities.CentroCusto)">
+            <summary>
+            Atualiza os dados de um Centro de Custo
+            </summary>
+            <param name="centroCusto">Objeto do tipo CentroCusto</param>
+            <param name="id">ID do Centro de Custo que será atualizado</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.CentroCustoController.Delete(System.Int32)">
+            <summary>
+            Exclui um Centro de Custo
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EspeciePropriedadeController.GetByEspecieID(System.Int32)">
+            <summary>
+            Retorna Lista dos Propriedades vinculadas à Espécie de acordo com ID
+            </summary>
+            <param name="especieID">ID da Espécie</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EspeciePropriedadeController.Post(System.Collections.Generic.List{CentralAtivos.Domain.Entities.EspeciePropriedade})">
+            <summary>
+            Inclui vínculo Espécie Propriedades
+            </summary>
+            <param name="especiePropriedades">Array de Objetos do tipo EspeciePropriedade</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EspeciePropriedadeController.Delete(System.Int32)">
+            <summary>
+            Exclui um vínculo Espécie Propriedade
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioFilialController.GetByInventarioID(System.Int32)">
+            <summary>
+            Retorna Lista de Filiais atribuidas ao Inventário de acordo com o ID informado
+            </summary>
+            <param name="inventarioID">ID do Inventário</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioFilialController.Post(CentralAtivos.Domain.Entities.InventarioFilial)">
+            <summary>
+            Inclui uma Filial ao Inventário
+            </summary>
+            <param name="inventarioFilial">Objeto do tipo InventarioFilial</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioFilialController.Delete(System.Int32)">
+            <summary>
+            Exclui uma Filial do Inventário
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioLocalController.GetByInventarioID(System.Int32)">
+            <summary>
+            Retorna Lista de Locais atribuidos ao Inventário de acordo com o ID informado
+            </summary>
+            <param name="inventarioID">ID do Inventário</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioLocalController.Post(CentralAtivos.Domain.Entities.InventarioLocal)">
+            <summary>
+            Inclui um Local ao Inventário
+            </summary>
+            <param name="inventarioLocal">Objeto do tipo InventarioLocal</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioLocalController.Delete(System.Int32)">
+            <summary>
+            Exclui um Local do Inventário
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioUsuarioController.GetByInventarioID(System.Int32)">
+            <summary>
+            Retorna Lista de Usuários atribuidos ao Inventário de acordo com o ID informado
+            </summary>
+            <param name="inventarioID">ID do Inventário</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioUsuarioController.GetByUsuarioID(System.Int32)">
+            <summary>
+            Retorna Lista dos Inventarios de acordo com o ID do Usuário vinculado
+            </summary>
+            <param name="usuarioID">ID do Usuário</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioUsuarioController.Post(CentralAtivos.Domain.Entities.InventarioUsuario)">
+            <summary>
+            Inclui um Usuário à Equipe do Inventário
+            </summary>
+            <param name="inventarioUsuario">Objeto do tipo InventarioUsuario</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioUsuarioController.Delete(System.Int32)">
+            <summary>
+            Exclui um Usuário do Inventário
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioController.GetByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista de Inventários Cadastrados para a Empresa de acordo com o ID informado
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioController.Get(System.Int32)">
+            <summary>
+            Retorna Inventário relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioController.Post(CentralAtivos.Domain.Entities.Inventario)">
+            <summary>
+            Inclui um Inventário
+            </summary>
+            <param name="inventario">Objeto do tipo Inventario</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioController.Put(System.Int32,CentralAtivos.Domain.Entities.Inventario)">
+            <summary>
+            Atualiza os dados de um Inventário
+            </summary>
+            <param name = "id" > ID do Inventário que será atualizado</param>
+            <param name="inventario">Objeto do tipo Inventario</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.InventarioController.CargaInicial(System.Int32)">
+            <summary>
+            Carga Inicial do Inventário
+            </summary>
+            <param name="inventarioID">ID do Inventário</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemImagemController.Post(System.Int32,CentralAtivos.Domain.Entities.Imagem)">
+            <summary>
+            Inclui uma Imagem no Item
+            </summary>
+            <param name="id">ID do Item relacionado à Imagem</param>
+            <param name="imagem">String Base64</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemImagemController.Delete(System.Int32,System.String)">
+            <summary>
+            Exclui um Item
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemEstadoController.GetAll">
+            <summary>
+            Retorna Lista de Todos os Estados dos Itens
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemController.GetByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista de Itens Cadastrados para a Empresa de acordo com o ID informado
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemController.GetByLocalID(System.Int32)">
+            <summary>
+            Retorna Lista de Itens Cadastrados para a Empresa de acordo com o LocalID informado
+            </summary>
+            <param name="localID">ID do Local</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemController.Get(System.Int32)">
+            <summary>
+            Retorna Item relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemController.Post(CentralAtivos.Domain.Entities.Item)">
+            <summary>
+            Inclui um Item
+            </summary>
+            <param name="item">Objeto do tipo Item</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemController.Put(System.Int32,CentralAtivos.Domain.Entities.Item)">
+            <summary>
+            Atualiza os dados de um Item
+            </summary>
+            <param name="item">Objeto do tipo Item</param>
+            <param name="id">ID do Item que será atualizado</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemController.Delete(System.Int32)">
+            <summary>
+            Exclui um Item
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemController.VerifyIfExists(System.Int32,System.Int32,System.String,System.Int32)">
+            <summary>
+            Verificar se Código + Incorporação enviada está cadastrada
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+            <param name="filialID">ID da Filial</param>
+            <param name="codigo">Código do Item</param>
+            <param name="incorporacao">Incorporação do Item</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ItemController.GetByCodigo(System.Int32,System.String,System.Int32)">
+            <summary>
+            Retorna o Item de acordo com o Código e Incorporação informados
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+            <param name="codigo">Código do Item</param>
+            <param name="incorporacao">Incorporação do Item</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ManutencaoBaseController.Post(CentralAtivos.Domain.Entities.Item)">
+            <summary>
+            Inclui um Item
+            </summary>
+            <param name="item">Objeto do tipo Item</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ManutencaoBaseController.Put(System.Int32,CentralAtivos.Domain.Entities.Item)">
+            <summary>
+            Atualiza os dados de um Item
+            </summary>
+            <param name="item">Objeto do tipo Item</param>
+            <param name="id">ID do Item que será atualizado</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.OrdemServicoMotivoController.GetMotivos">
+            <summary>
+            Retorna Lista de Motivos de Ordem de Serviço Cadastrados
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.OrdemServicoController.GetOrdensServico(System.Int32)">
+            <summary>
+            Retorna Lista de Ordens de Serviço Cadastradas
+            </summary>
+            /// <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.OrdemServicoController.Get(System.Int32)">
+            <summary>
+            Retorna Ordem de Serviço relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.OrdemServicoController.Post(CentralAtivos.Domain.Entities.OrdemServico)">
+            <summary>
+            Inclui uma Ordem de Serviço
+            </summary>
+            <param name="ordemServico">Objeto do tipo OrdemServico</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.OrdemServicoController.EnviarAnexos(System.Int32)">
+            <summary>
+            Inclui Anexos à Ordem de Servico
+            </summary>
+            <param name="ordemServicoID">ID da Ordem de Servico</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.OrdemServicoController.Delete(System.Int32)">
+            <summary>
+            Exclui uma Ordem de Serviço
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.OrdemServicoController.AlteraStatus(System.Int32,System.Boolean)">
+            <summary>
+            Atualiza o Status de uma Ordem de Serviço
+            </summary>
+            <param name="id">ID da Ordem de Serviço</param>
+            <param name="aprovado">Booleano informando se está aprovado</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.MenuController.GetMenus">
+            <summary>
+            Retorna Lista de Menus Cadastrados
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.MenuController.GetByPerfilID(System.Int32)">
+            <summary>
+            Retorna Lista de Menus de acordo com o ID do Perfil informado
+            </summary>
+            <param name="perfilID">ID do Perfil</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ColetorController.GetColetores">
+            <summary>
+            Retorna Lista de Coletores Cadastrados
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ColetorController.Get(System.Int32)">
+            <summary>
+            Retorna Coletor relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ColetorController.Post(CentralAtivos.Domain.Entities.Coletor)">
+            <summary>
+            Inclui um Coletor
+            </summary>
+            <param name="coletor">Objeto do tipo Coletor</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ColetorController.Put(System.Int32,CentralAtivos.Domain.Entities.Coletor)">
+            <summary>
+            Atualiza os dados de um Coletor
+            </summary>
+            <param name="id">ID do Coletor que será atualizado</param>
+            <param name="coletor">Objeto do tipo Coletor</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ColetorController.Delete(System.Int32)">
+            <summary>
+            Exclui um Coletor
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PlacaController.GetByPlacaGrupoID(System.Int32)">
+            <summary>
+            Retorna Lista de Placas de acordo com o ID do Grupo de Placas enviado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PlacaController.Put(System.Int32,CentralAtivos.Domain.Entities.Placa)">
+            <summary>
+            Atualiza os dados de uma Placa
+            </summary>
+            <param name="id">ID da Placa que será alterada</param>
+            <param name="placa">Objeto do tipo Placa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PlacaGrupoController.GetByInventarioID(System.Int32)">
+            <summary>
+            Retorna Lista de Grupos de Placa Cadastrados de acordo com ID do Inventário enviado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PlacaGrupoController.GetJumpsByPlacaGrupoID(System.Int32)">
+            <summary>
+            Retorna Lista de Pulos de Placas de acordo com o ID do Grupo de Placas enviado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PlacaGrupoController.Post(CentralAtivos.Domain.Entities.PlacaGrupo)">
+            <summary>
+            Inclui um Grupo de Placas
+            </summary>
+            <param name="placaGrupo">Objeto do tipo PlacaGrupo</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PlacaGrupoController.Delete(System.Int32)">
+            <summary>
+            Exclui um Grupo de Placas
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PerfilMenuController.Post(CentralAtivos.Domain.Entities.PerfilMenu)">
+            <summary>
+            Vincula um Menu ao Perfil
+            </summary>
+            <param name="perfilMenu">Objeto do tipo PerfilMenu</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PerfilMenuController.Delete(System.Int32,System.Int32)">
+            <summary>
+            Desvincula um Menu do Perfil
+            </summary>
+            <param name="menuID">ID do Menu</param>
+            <param name="perfilID">ID do Perfil</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.RequisicaoController.GetRequisicoes(System.Int32)">
+            <summary>
+            Retorna Lista de Requisições Cadastradas
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.SincronizacaoController.GetSincronizacoes">
+            <summary>
+            Retorna Lista de Sincronizações
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.SincronizacaoController.Post(System.Int32)">
+            <summary>
+            Envia Arquivo de Sincronização
+            </summary>
+            <param name="inventarioID">ID do Inventário</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.SincronizacaoController.Processar(System.Int32)">
+            <summary>
+            Inicia Processamento de Arquivo de Sincronização
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PropriedadeValorController.Delete(System.Int32)">
+            <summary>
+            Exclui um Valor vinculado à Propriedade
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ResponsavelController.GetByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista de Responsáveis Ativos Cadastrados para a Empresa de acordo com o ID informado
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ResponsavelController.Get(System.Int32)">
+            <summary>
+            Retorna Responsável relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ResponsavelController.Post(CentralAtivos.Domain.Entities.Responsavel)">
+            <summary>
+            Inclui um Responsável
+            </summary>
+            <param name="responsavel">Objeto do tipo Responsavel</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ResponsavelController.Put(System.Int32,CentralAtivos.Domain.Entities.Responsavel)">
+            <summary>
+            Atualiza os dados de um Responsável
+            </summary>
+            <param name="responsavel">Objeto do tipo Responsavel</param>
+            <param name="id">ID do Responsável que será atualizado</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.ResponsavelController.Delete(System.Int32)">
+            <summary>
+            Exclui um Responsável
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PropriedadeController.GetByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista dos Propriedade Ativas Cadastradas para uma Empresa de acordo com o ID informado
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PropriedadeController.Post(CentralAtivos.Domain.Entities.Propriedade)">
+            <summary>
+            Inclui uma Propriedade
+            </summary>
+            <param name="propriedade">Objeto do tipo Propriedade</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PropriedadeController.Get(System.Int32)">
+            <summary>
+            Retorna Propriedade relacionada ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PropriedadeController.Put(System.Int32,CentralAtivos.Domain.Entities.Propriedade)">
+            <summary>
+            Atualiza os dados de uma Propriedade
+            </summary>
+            <param name="propriedade">Objeto do tipo Propriedade</param>
+            <param name="id">ID da Propriedade que será atualizada</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PropriedadeController.Delete(System.Int32)">
+            <summary>
+            Exclui uma Propriedade
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EspecieController.GetByGrupoID(System.Int32)">
+            <summary>
+            Retorna Lista dos Espécies Ativas Cadastrados para um Grupo de acordo com o ID informado
+            </summary>
+            <param name="grupoID">ID do Grupo</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EspecieController.GetByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista dos Espécies Ativas Cadastradas de acordo com a empresa informada
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EspecieController.Get(System.Int32)">
+            <summary>
+            Retorna Espécie relacionada ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EspecieController.Post(CentralAtivos.Domain.Entities.Especie)">
+            <summary>
+            Inclui uma Espécie
+            </summary>
+            <param name="especie">Objeto do tipo Espécie</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EspecieController.Put(System.Int32,CentralAtivos.Domain.Entities.Especie)">
+            <summary>
+            Atualiza os dados de uma Espécie
+            </summary>
+            <param name="especie">Objeto do tipo Espécie</param>
+            <param name="id">ID da Espécie que será atualizada</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EspecieController.Delete(System.Int32)">
+            <summary>
+            Exclui uma Espécie
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.GrupoController.GetByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista dos Grupos Ativos Cadastrados para uma Empresa de acordo com o ID informado
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.GrupoController.Get(System.Int32)">
+            <summary>
+            Retorna Grupo relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.GrupoController.Post(CentralAtivos.Domain.Entities.Grupo)">
+            <summary>
+            Inclui um Grupo
+            </summary>
+            <param name="grupo">Objeto do tipo Grupo</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.GrupoController.Put(System.Int32,CentralAtivos.Domain.Entities.Grupo)">
+            <summary>
+            Atualiza os dados de um Grupo
+            </summary>
+            <param name="grupo">Objeto do tipo Grupo</param>
+            <param name="id">ID do Grupo que será atualizado</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.GrupoController.Delete(System.Int32)">
+            <summary>
+            Exclui um Grupo
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.LocalController.GetPrincipaisByFilialID(System.Int32)">
+            <summary>
+            Retorna Lista dos Principais Locais Ativos Cadastrados para uma Filial de acordo com o ID informado
+            </summary>
+            <param name="filialID">ID da Filial</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.LocalController.GetSubLocaisByLocalID(System.Int32)">
+            <summary>
+            Retorna Lista dos Sub Locais Ativos Cadastrados para um Local de acordo com o ID informado
+            </summary>
+            <param name="localID">ID do Local</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.LocalController.GetAllByFilialID(System.Int32)">
+            <summary>
+            Retorna todos os Locais de acordo com o ID da Filial informada
+            </summary>
+            <param name="filialID">ID da Filial</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.LocalController.GetAllByManyFiliaisID(System.String)">
+            <summary>
+            Retorna todos os Locais de acordo com vários IDs de Filial informados
+            </summary>
+            <param name="filiaisID">IDs de Filiais</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.LocalController.GetByEmpresaID(System.Int32)">
+            <summary>
+            Retorna todos os Locais de acordo com o ID da empresa informada
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.LocalController.Get(System.Int32)">
+            <summary>
+            Retorna Local relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.LocalController.Post(CentralAtivos.Domain.Entities.Local)">
+            <summary>
+            Inclui um Local
+            </summary>
+            <param name="local">Objeto do tipo Local</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.LocalController.Put(System.Int32,CentralAtivos.Domain.Entities.Local)">
+            <summary>
+            Atualiza os dados de um Local
+            </summary>
+            <param name="local">Objeto do tipo Local</param>
+            <param name="id">ID do Local que será atualizado</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.LocalController.Delete(System.Int32)">
+            <summary>
+            Exclui um Local
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.FilialController.GetByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista de Filiais Ativas Cadastradas para a Empresa de acordo com o ID informado
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.FilialController.Get(System.Int32)">
+            <summary>
+            Retorna Filial relacionada ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.FilialController.Post(CentralAtivos.Domain.Entities.Filial)">
+            <summary>
+            Inclui uma Filial
+            </summary>
+            <param name="filial">Objeto do tipo Filial</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.FilialController.Put(System.Int32,CentralAtivos.Domain.Entities.Filial)">
+            <summary>
+            Atualiza os dados de uma Filial
+            </summary>
+            <param name="filial">Objeto do tipo Filial</param>
+            <param name="id">ID da Filial que será atualizada</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.FilialController.Delete(System.Int32)">
+            <summary>
+            Exclui uma Filial
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PermissaoController.Get(System.Int32)">
+            <summary>
+            Retorna Permissões relacionadas ao ID do Perfil informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PermissaoController.GetByFuncionalidade(System.String)">
+            <summary>
+            Retorna Permissões do Usuário do Token de acordo com a Funcionalidade
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PermissaoController.Post(CentralAtivos.Domain.Entities.Permissao)">
+            <summary>
+            Inclui uma Permissão
+            </summary>
+            <param name="permissao">Objeto do tipo Permissao</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PermissaoController.Put(CentralAtivos.API.Controllers.PermissaoController.PermissaoAtualizacao)">
+            <summary>
+            Atualiza Permissão do Perfil
+            </summary>
+            <param name="permissao">Objeto do Tipo PermissaoAtualizacao</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PermissaoController.Delete(System.Int32)">
+            <summary>
+            Exclui uma Permissão
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PerfilController.GetPerfis">
+            <summary>
+            Retorna Lista de Perfis Ativos Cadastrados
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PerfilController.Get(System.Int32)">
+            <summary>
+            Retorna Perfil relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PerfilController.Post(CentralAtivos.Domain.Entities.Perfil)">
+            <summary>
+            Inclui um Perfil
+            </summary>
+            <param name="perfil">Objeto do tipo Perfil</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PerfilController.Put(System.Int32,CentralAtivos.Domain.Entities.Perfil)">
+            <summary>
+            Atualiza os dados de um Perfil
+            </summary>
+            <remarks>
+            É possível atualizar, apenas, o campo Nome
+            </remarks>
+            <param name="perfil">Objeto do tipo Perfil</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PerfilController.Delete(System.Int32)">
+            <summary>
+            Exclui um Perfil
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.PerfilController.GetPermissoes(System.Int32)">
+            <summary>
+            Retorna Lista de Permissões do Perfil
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EmpresaController.GetEmpresas">
+            <summary>
+            Retorna Lista de Empresas Ativas Cadastrados
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EmpresaController.GetByInventarioUsuarioID(System.Int32)">
+            <summary>
+            Retorna Lista de Empresas com Inventários Cadastrados de Acordo com o ID do Usuário
+            </summary>
+            /// <param name="usuarioID">ID do Usuário</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EmpresaController.Get(System.Int32)">
+            <summary>
+            Retorna Empresa relacionada ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EmpresaController.Post(CentralAtivos.Domain.Entities.Empresa)">
+            <summary>
+            Inclui uma Empresa
+            </summary>
+            <param name="empresa">Objeto do tipo Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EmpresaController.Put(System.Int32,CentralAtivos.Domain.Entities.Empresa)">
+            <summary>
+            Atualiza os dados de uma EMpresa
+            </summary>
+            <param name="empresa">Objeto do tipo Empresa</param>
+            <param name="id">ID da Empresa que será atualizada</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.EmpresaController.Delete(System.Int32)">
+            <summary>
+            Exclui uma Empresa
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UploadController.GetUploads">
+            <summary>
+            Retorna Lista de Uploads Cadastrados
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UploadController.Novo(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Inclui um Novo Processo de Upload
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UploadController.Processar(System.Int32)">
+            <summary>
+            Inicia Processamento de Arquivo
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UsuarioController.GetUsuarios">
+            <summary>
+            Retorna Lista de Usuários Ativos Cadastrados
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UsuarioController.GetByEmpresaID(System.Int32)">
+            <summary>
+            Retorna Lista de Usuários Ativos Cadastrados de acordo com ID da Empresa enviada como parâmetro
+            </summary>
+            <param name="empresaID">ID da Empresa</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UsuarioController.Get(System.Int32)">
+            <summary>
+            Retorna Usuário relacionado ao ID informado
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UsuarioController.Post(CentralAtivos.Domain.Entities.Usuario)">
+            <summary>
+            Inclui um Usuário
+            </summary>
+            <param name="usuario">Objeto do tipo Usuario</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UsuarioController.Put(System.Int32,CentralAtivos.Domain.Entities.Usuario)">
+            <summary>
+            Atualiza os dados de um Usuário
+            </summary>
+            <remarks>
+            É possível alterar, apenas, os campos Nome e Email
+            </remarks>
+            <param name="usuario">Objeto do tipo Usuario</param>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UsuarioController.Delete(System.Int32)">
+            <summary>
+            Exclui um Usuário
+            </summary>
+        </member>
+        <member name="M:CentralAtivos.API.Controllers.UsuarioController.NotificarPrimeiroAcesso(System.Int32)">
+            <summary>
+            Notifica Primeiro Acesso do Usuário de acordo com ID informado
+            </summary>
+        </member>
+    </members>
+</doc>
